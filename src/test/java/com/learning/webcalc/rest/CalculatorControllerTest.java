@@ -1,10 +1,4 @@
-package com.learning.webcalc;
-
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+package com.learning.webcalc.rest;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -17,10 +11,15 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest // TODO: try to replace by @WebMvcTest
 @AutoConfigureMockMvc
-public class HelloControllerTest {
+public class CalculatorControllerTest
+{
 
     @Autowired
     private MockMvc mvc;
