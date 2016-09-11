@@ -3,9 +3,9 @@ package com.learning.webcalc.service.api;
 public class HistoryItem
 {
 
-    private String expression;
+    private final String expression;
 
-    private double result;
+    private final double result;
 
     public HistoryItem(String expression, double result)
     {
@@ -18,19 +18,9 @@ public class HistoryItem
         return expression;
     }
 
-    public void setExpression(String expression)
-    {
-        this.expression = expression;
-    }
-
     public double getResult()
     {
         return result;
-    }
-
-    public void setResult(double result)
-    {
-        this.result = result;
     }
 
 }

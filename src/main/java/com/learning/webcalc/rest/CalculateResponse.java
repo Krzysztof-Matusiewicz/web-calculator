@@ -3,14 +3,14 @@ package com.learning.webcalc.rest;
 public class CalculateResponse
 {
 
-    private double result;
+    private final double result;
 
     public double getResult()
     {
         return result;
     }
 
-    public void setResult(double result)
+    public CalculateResponse(double result)
     {
         this.result = result;
     }

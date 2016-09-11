@@ -6,7 +6,7 @@ import java.util.List;
 public class History
 {
 
-    private List<HistoryItem> items = new ArrayList<>();
+    private final List<HistoryItem> items = new ArrayList<>();
 
     public List<HistoryItem> getItems()
     {

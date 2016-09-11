@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CalculatorController
 {
 
-    private CalculatorService calculatorService;
+    private final CalculatorService calculatorService;
 
     @Autowired
     public CalculatorController(CalculatorService calculatorService)
@@ -22,18 +22,13 @@ public class CalculatorController
     @RequestMapping(path = "/history", method = RequestMethod.GET)
     public HistoryResponse history()
     {
-        HistoryResponse response = new HistoryResponse();
-        response.setHistory(calculatorService.getHistory());
-        return response;
+        return new HistoryResponse(calculatorService.getHistory());
     }
 
     @RequestMapping(path = "/calculate/{expression}", method = RequestMethod.GET)
     public CalculateResponse calculate(@PathVariable String expression)
     {
-        CalculateResponse response = new CalculateResponse();
-        double result = calculatorService.calculate(expression);
-        response.setResult(result);
-        return response;
+        return new CalculateResponse(calculatorService.calculate(expression));
     }
 
 }

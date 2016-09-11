@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class DefaultHistoryService implements HistoryService
 {
 
-    private History history = new History();
+    private final History history = new History();
 
     @Override
     public History getHistory()
