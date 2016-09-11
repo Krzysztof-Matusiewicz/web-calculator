@@ -90,6 +90,12 @@ public class CalculatorControllerTest
         performTestFor("3+4*2/(1-5)^2", 3.5);
     }
 
+    @Test
+    public void getCalculateComplexExpressionWithSqrt() throws Exception
+    {
+        performTestFor("1+sqrt(8*10+1)/3", 4);
+    }
+
     private void performTestFor(String inputExpression, double expectedResult) throws Exception
     {
         mvc.perform(MockMvcRequestBuilders.get("/calculate")

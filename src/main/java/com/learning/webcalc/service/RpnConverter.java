@@ -19,9 +19,14 @@ public class RpnConverter
 
         for (Object token : tokens)
         {
-            if (token instanceof Number)
+            if (token instanceof Number) // TODO: else if
             {
                 output.add(token);
+                continue;
+            }
+            if (isFunction(token))
+            {
+                stack.push(token);
                 continue;
             }
             if (isOperator(token))
@@ -44,6 +49,10 @@ public class RpnConverter
             if (token.equals(")"))
             {
                 emptyStackUntilOpenParenthesis(stack, output);
+                if (!stack.isEmpty() && isFunction(stack.peek()))
+                {
+                    output.add(stack.pop());
+                }
                 continue;
             }
             throw new IllegalStateException();
@@ -93,5 +102,7 @@ public class RpnConverter
     {
         return isRightAssociativeOperator(operatorOnStack) && getImportance(operatorFromTokens) < getImportance(operatorOnStack);
     }
+
+
 
 }

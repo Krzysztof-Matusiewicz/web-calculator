@@ -11,6 +11,7 @@ import java.util.List;
 
 import static com.learning.webcalc.service.util.ExpressionUtil.isOperator;
 import static java.lang.Character.isDigit;
+import static java.lang.Character.isLetter;
 
 @Component
 public class ExpressionProcessor
@@ -34,7 +35,8 @@ public class ExpressionProcessor
                 .replaceAll("\\{", "(")
                 .replaceAll("\\}", ")")
                 .replaceAll("\\[", "(")
-                .replaceAll("\\]", ")");
+                .replaceAll("\\]", ")")
+                .replaceAll("sqrt", "s");
     }
 
     public List<Object> tokenize(String expression) throws ParseException
@@ -48,7 +50,7 @@ public class ExpressionProcessor
             {
                 number.append(c);
             }
-            else if (isOperator(c) || isParenthesis(c))
+            else if (isOperator(c) || isParenthesis(c) || isFunction(c))
             {
                 if (number.length() > 0)
                 {
@@ -87,6 +89,11 @@ public class ExpressionProcessor
     private boolean isParenthesis(char character)
     {
         return character == '(' || character == ')';
+    }
+
+    private boolean isFunction(char character)
+    {
+        return isLetter(character);
     }
 
     private double toDouble(String value) throws ParseException

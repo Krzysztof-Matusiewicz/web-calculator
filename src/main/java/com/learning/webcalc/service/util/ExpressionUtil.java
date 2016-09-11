@@ -2,6 +2,7 @@ package com.learning.webcalc.service.util;
 
 import java.util.List;
 
+import static java.lang.Character.isLetter;
 import static java.util.Arrays.asList;
 
 public class ExpressionUtil
@@ -46,6 +47,12 @@ public class ExpressionUtil
             return 3;
         }
         throw new UnsupportedOperationException();
+    }
+
+    public static boolean isFunction(Object token)
+    {
+        String tokenAsString = token.toString();
+        return tokenAsString.length() == 1 && isLetter(tokenAsString.charAt(0));
     }
 
 }

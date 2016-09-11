@@ -59,6 +59,19 @@ public class RpnCalculatorTest
     }
 
     @Test
+    public void shouldCalculateExpressionWithSqrt() throws ParseException
+    {
+        // given
+        final List<Object> rpnTokens = asList(1d, 8d, 10d, "*", 1d, "+", "s", 3d, "/", "+");
+
+        // when
+        double result = objectUnderTest.calculate(rpnTokens);
+
+        // then
+        assertThat(result).isEqualTo(4);
+    }
+
+    @Test
     public void shouldCalculateEmptyExpression() throws ParseException
     {
         // given

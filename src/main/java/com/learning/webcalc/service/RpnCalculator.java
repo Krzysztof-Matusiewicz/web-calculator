@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Stack;
 
+import static com.learning.webcalc.service.util.ExpressionUtil.isFunction;
 import static com.learning.webcalc.service.util.ExpressionUtil.isOperator;
 
 @Component
@@ -26,10 +27,18 @@ public class RpnCalculator
                 stack.push(token);
                 continue;
             }
-            if (isOperator(token))
+            else if (isOperator(token))
             {
                 double result = calculate(token, (Double)stack.pop(), (Double)stack.pop());
                 stack.push(result);
+            }
+            else if (isFunction(token))
+            {
+                stack.push(executeFunction(token, stack));
+            }
+            else
+            {
+                throw new UnsupportedOperationException();
             }
         }
         double result = (Double)stack.pop();
@@ -61,6 +70,15 @@ public class RpnCalculator
         if (operator.equals("^"))
         {
             return Math.pow(value1, value2);
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    private double executeFunction(Object token, Stack<Object> stack)
+    {
+        if (token.equals("s"))
+        {
+            return Math.sqrt((Double)stack.pop());
         }
         throw new UnsupportedOperationException();
     }

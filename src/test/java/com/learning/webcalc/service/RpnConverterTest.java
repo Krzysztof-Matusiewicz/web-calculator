@@ -29,7 +29,7 @@ public class RpnConverterTest
         List<Object> result = objectUnderTest.convert(testTokens);
 
         // then
-        assertThat(result).containsOnlyElementsOf(rpnTokens);
+        assertThat(result).containsExactlyElementsOf(rpnTokens);
     }
 
     @Test
@@ -43,7 +43,7 @@ public class RpnConverterTest
         List<Object> result = objectUnderTest.convert(testTokens);
 
         // then
-        assertThat(result).containsOnlyElementsOf(rpnTokens);
+        assertThat(result).containsExactlyElementsOf(rpnTokens);
     }
 
     @Test
@@ -57,7 +57,7 @@ public class RpnConverterTest
         List<Object> result = objectUnderTest.convert(testTokens);
 
         // then
-        assertThat(result).containsOnlyElementsOf(rpnTokens);
+        assertThat(result).containsExactlyElementsOf(rpnTokens);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class RpnConverterTest
         List<Object> result = objectUnderTest.convert(testTokens);
 
         // then
-        assertThat(result).containsOnlyElementsOf(rpnTokens);
+        assertThat(result).containsExactlyElementsOf(rpnTokens);
     }
 
     @Test
@@ -85,7 +85,21 @@ public class RpnConverterTest
         List<Object> result = objectUnderTest.convert(testTokens);
 
         // then
-        assertThat(result).containsOnlyElementsOf(rpnTokens);
+        assertThat(result).containsExactlyElementsOf(rpnTokens);
+    }
+
+    @Test
+    public void shouldConvertExpressionWithSqrt()
+    {
+        // given
+        final List<Object> testTokens = asList(1, "+", "s", "(", 8, "*", 10, "+", 1, ")", "/", 3);
+        final List<Object> rpnTokens = asList(1, 8, 10, "*", 1, "+", "s", 3, "/", "+");
+
+        // when
+        List<Object> result = objectUnderTest.convert(testTokens);
+
+        // then
+        assertThat(result).containsExactlyElementsOf(rpnTokens);
     }
 
     @Test
@@ -99,7 +113,7 @@ public class RpnConverterTest
         List<Object> result = objectUnderTest.convert(testTokens);
 
         // then
-        assertThat(result).containsOnlyElementsOf(rpnTokens);
+        assertThat(result).containsExactlyElementsOf(rpnTokens);
     }
 
 }
