@@ -1,6 +1,5 @@
 package com.learning.webcalc.rest;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +10,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.hamcrest.Matchers.equalTo;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -23,15 +22,63 @@ public class CalculatorControllerTest
 
     @Autowired
     private MockMvc mvc;
-
-    @Ignore
+    
     @Test
-    public void getHello() throws Exception
+    public void getCalculateSimpleExpression() throws Exception
     {
-        mvc.perform(MockMvcRequestBuilders.get("/")
+        performTestFor("3+4*2", 11);
+    }
+
+    @Test
+    public void getCalculateExpressionWithWhitespaces() throws Exception
+    {
+        performTestFor("  3+ 4 *\t2 ", 11);
+    }
+
+    @Test
+    public void getCalculateExpressionWithNonIntegers() throws Exception
+    {
+        String expression = String.format("(%.2f+%.3f)*%.1f-%.2f", 2.45, 567.789, 0.4, .99);
+        performTestFor(expression, 227.1056);
+    }
+
+    @Test
+    public void getCalculateEmptyExpression() throws Exception
+    {
+        performTestFor("", 0);
+    }
+
+    @Test
+    public void getCalculateEmptyExpressionWithWhitespaces() throws Exception
+    {
+        performTestFor(" \t ", 0);
+    }
+
+    @Test
+    public void getCalculateComplexExpressionWithNegativeValues() throws Exception
+    {
+        performTestFor("-5*(-18+(-3))", 105);
+    }
+
+    @Test
+    public void getCalculateComplexExpression() throws Exception
+    {
+        performTestFor("((2+7)/3+(3-14)*4)/2", -20.5);
+    }
+
+    @Test
+    public void getCalculateComplexExpressionWithCutResult() throws Exception
+    {
+        performTestFor("1+(8*10+(98/3*(20)-8))", 726.3333333333333d);
+    }
+
+    private void performTestFor(String inputExpression, double expectedResult) throws Exception
+    {
+        mvc.perform(MockMvcRequestBuilders.get("/calculate")
+                .param("exp", inputExpression)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Greetings from Spring Boot!")));
+                .andExpect(jsonPath("$.result", equalTo(expectedResult)));
     }
 
 }

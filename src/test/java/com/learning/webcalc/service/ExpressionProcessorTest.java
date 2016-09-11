@@ -1,8 +1,8 @@
 package com.learning.webcalc.service;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
+import java.text.ParseException;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -48,41 +48,54 @@ public class ExpressionProcessorTest
     }
 
     @Test
-    public void shouldTokenize()
+    public void shouldTokenize() throws ParseException
     {
         // given
         final String testExpression = "1+(8*10+(98/3*(20)-8))"; // TODO: sqrt &  root
-        final List<String> tokens = asList("1", "+", "(", "8", "*", "10", "+", "(", "98", "/", "3", "*", "(", "20", ")", "-", "8", ")", ")" );
+        final List<Object> tokens = asList(1d, "+", "(", 8d, "*", 10d, "+", "(", 98d, "/", 3d, "*", "(", 20d, ")", "-", 8d, ")", ")" );
 
         // when
-        List<String> result = objectUnderTest.tokenize(testExpression);
+        List<Object> result = objectUnderTest.tokenize(testExpression);
 
         // then
         assertThat(result).containsOnlyElementsOf(tokens);
     }
 
-    @Ignore
     @Test
-    public void shouldTokenizeExpressionWithNegativeValues() // TODO: support for floats
+    public void shouldTokenizeExpressionWithNegativeValues() throws ParseException
     {
         // given
         final String testExpression = "-5*(-18+(-3))";
-        final List<String> tokens = asList("-5", "*", "(", "-18", "+", "(", "-3", ")", ")" );
+        final List<Object> tokens = asList(-5d, "*", "(", -18d, "+", "(", -3d, ")", ")" );
 
         // when
-        List<String> result = objectUnderTest.tokenize(testExpression);
+        List<Object> result = objectUnderTest.tokenize(testExpression);
 
         // then
         assertThat(result).containsOnlyElementsOf(tokens);
     }
 
     @Test
-    public void shouldTokenizeEmptyExpression()
+    public void shouldTokenizeExpressionWithNonIntegerValues() throws ParseException
+    {
+        // given
+        final String testExpression = String.format("(%.2f+%.3f)*%.1f-%.2f", 2.45, 567.789, 0.4, .99);
+        final List<Object> tokens = asList("(", 2.45d, "+", 567.789, ")", "*", 0.4, "-", 0.99 );
+
+        // when
+        List<Object> result = objectUnderTest.tokenize(testExpression);
+
+        // then
+        assertThat(result).containsOnlyElementsOf(tokens);
+    }
+
+    @Test
+    public void shouldTokenizeEmptyExpression() throws ParseException
     {
         // given
 
         // when
-        List<String> result = objectUnderTest.tokenize(EMPTY_EXPRESSION);
+        List<Object> result = objectUnderTest.tokenize(EMPTY_EXPRESSION);
 
         // then
         assertThat(result).isEmpty();
@@ -92,11 +105,11 @@ public class ExpressionProcessorTest
     public void shouldToReversePolishNotationSimpleExpression()
     {
         // given
-        final List<String> testTokens = asList("3", "+", "4", "*", "2");
-        final List<String> rpnTokens = asList("3", "4", "2", "*", "+");
+        final List<Object> testTokens = asList(3, "+", 4, "*", 2);
+        final List<Object> rpnTokens = asList(3, 4, 2, "*", "+");
 
         // when
-        List<String> result = objectUnderTest.toReversePolishNotation(testTokens);
+        List<Object> result = objectUnderTest.toReversePolishNotation(testTokens);
 
         // then
         assertThat(result).containsOnlyElementsOf(rpnTokens);
@@ -106,11 +119,11 @@ public class ExpressionProcessorTest
     public void shouldToReversePolishNotationComplexExpression()
     {
         // given
-        final List<String> testTokens = asList("(", "(", "2", "+", "7", ")", "/", "3", "+", "(", "14", "-", "3", ")", "*", "4", ")", "/", "2");
-        final List<String> rpnTokens = asList("2", "7", "+", "3",  "/", "14",  "3", "-", "4", "*", "+", "2", "/");
+        final List<Object> testTokens = asList("(", "(", 2, "+", 7, ")", "/", 3, "+", "(", 3, "-", 14, ")", "*", 4, ")", "/", 2);
+        final List<Object> rpnTokens = asList(2, 7, "+", 3,  "/", 3, 14, "-", 4, "*", "+", 2, "/");
 
         // when
-        List<String> result = objectUnderTest.toReversePolishNotation(testTokens);
+        List<Object> result = objectUnderTest.toReversePolishNotation(testTokens);
 
         // then
         assertThat(result).containsOnlyElementsOf(rpnTokens);
@@ -120,35 +133,21 @@ public class ExpressionProcessorTest
     public void shouldToReversePolishNotationEmptyExpression()
     {
         // given
-        final List<String> testTokens = emptyList();
-        final List<String> rpnTokens = emptyList();
+        final List<Object> testTokens = emptyList();
+        final List<Object> rpnTokens = emptyList();
 
         // when
-        List<String> result = objectUnderTest.toReversePolishNotation(testTokens);
+        List<Object> result = objectUnderTest.toReversePolishNotation(testTokens);
 
         // then
         assertThat(result).containsOnlyElementsOf(rpnTokens);
     }
 
     @Test
-    public void shouldToReversePolishNotationExpressionWithNegativeValues()
+    public void shouldCalculateReversePolishNotationSimpleExpression() throws ParseException
     {
         // given
-        final List<String> testTokens = asList("-", "3", "+", "(", "-", "5", ")");
-        final List<String> rpnTokens = asList("-", "3", "-", "5", "+");
-
-        // when
-        List<String> result = objectUnderTest.toReversePolishNotation(testTokens);
-
-        // then
-        assertThat(result).containsOnlyElementsOf(rpnTokens);
-    }
-
-    @Test
-    public void shouldCalculateReversePolishNotationSimpleExpression()
-    {
-        // given
-        final List<String> rpnTokens = asList("3", "4", "2", "*", "+");
+        final List<Object> rpnTokens = asList(3d, 4d, 2d, "*", "+");
 
         // when
         double result = objectUnderTest.calculateReversePolishNotation(rpnTokens);
@@ -158,43 +157,29 @@ public class ExpressionProcessorTest
     }
 
     @Test
-    public void shouldCalculateReversePolishNotationComplexExpression()
+    public void shouldCalculateReversePolishNotationComplexExpression() throws ParseException
     {
         // given
-        final List<String> rpnTokens = asList("2", "7", "+", "3",  "/", "14",  "3", "-", "4", "*", "+", "2", "/");
+        final List<Object> rpnTokens = asList(2d, 7d, "+", 3d,  "/", 3d,  14d, "-", 4d, "*", "+", 2d, "/");
 
         // when
         double result = objectUnderTest.calculateReversePolishNotation(rpnTokens);
 
         // then
-        assertThat(result).isEqualTo(23.5);
+        assertThat(result).isEqualTo(-20.5);
     }
 
     @Test
-    public void shouldCalculateReversePolishNotationEmptyExpression()
+    public void shouldCalculateReversePolishNotationEmptyExpression() throws ParseException
     {
         // given
-        final List<String> rpnTokens = emptyList();
+        final List<Object> rpnTokens = emptyList();
 
         // when
         double result = objectUnderTest.calculateReversePolishNotation(rpnTokens);
 
         // then
         assertThat(result).isEqualTo(0);
-    }
-
-    @Ignore // TODO: fix
-    @Test
-    public void shouldCalculateReversePolishNotationExpressionWithNegativeValues()
-    {
-        // given
-        final List<String> rpnTokens = asList("-", "3", "-", "5", "+");
-
-        // when
-        double result = objectUnderTest.calculateReversePolishNotation(rpnTokens);
-
-        // then
-        assertThat(result).isEqualTo(-8);
     }
 
 }

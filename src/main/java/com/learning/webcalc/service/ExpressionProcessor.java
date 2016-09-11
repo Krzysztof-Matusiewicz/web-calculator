@@ -2,27 +2,33 @@ package com.learning.webcalc.service;
 
 import org.springframework.stereotype.Component;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import static java.lang.Double.valueOf;
+import static java.lang.Character.isDigit;
 import static java.util.Arrays.asList;
-import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.joining;
-import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 @Component
 public class ExpressionProcessor
 {
 
-    private static final String[] TOKENS = new String[] { "+", "-", "*", "/", "(", ")", "[", "]", "{", "}" };
-
-    private static final String TOKENS_PATTERN = stream(TOKENS).map(Pattern::quote).collect(joining("|"));
-
     private static final List<String> OPERATORS = asList("+", "-", "*", "/");
+
+    private final NumberFormat numberFormat;
+
+    private final char decimalSeparator;
+
+    public ExpressionProcessor()
+    {
+        numberFormat = NumberFormat.getInstance();
+        DecimalFormatSymbols symbols = ((DecimalFormat)numberFormat).getDecimalFormatSymbols();
+        decimalSeparator = symbols.getDecimalSeparator();
+    }
 
     public String clean(String expression)
     {
@@ -34,26 +40,61 @@ public class ExpressionProcessor
                 .replaceAll("\\]", ")");
     }
 
-    public List<String> tokenize(String expression)
+    public List<Object> tokenize(String expression) throws ParseException
     {
-        List<String> tokens = new ArrayList<>();
-        Pattern pattern = Pattern.compile("\\d+|" + TOKENS_PATTERN);
-        Matcher matcher = pattern.matcher(expression);
-        while (matcher.find())
+        StringBuilder number = new StringBuilder();
+        List<Object> tokens = new ArrayList<>();
+
+        for (char c : expression.toCharArray())
         {
-            tokens.add(matcher.group());
+            if (isDigit(c) || isDecimalSeparator(c) || isMinusSignAsPartOfNegativeValue(c, number, tokens))
+            {
+                number.append(c);
+            }
+            else if (isOperator(c) || isParenthesis(c))
+            {
+                if (number.length() > 0)
+                {
+                    tokens.add(toDouble(number.toString()));
+                    number = new StringBuilder();
+                }
+                tokens.add(Character.toString(c)); // TODO: keep character
+            }
+            else
+            {
+                throw new UnsupportedOperationException();
+            }
+        }
+        if (number.length() > 0)
+        {
+            tokens.add(toDouble(number.toString()));
         }
         return tokens;
     }
 
-    public List<String> toReversePolishNotation(List<String> tokens)
+    private boolean isDecimalSeparator(char character)
     {
-        List<String> output = new ArrayList<>();
-        Stack<String> stack = new Stack<>();
+        return character == decimalSeparator;
+    }
 
-        for (String token : tokens)
+    private boolean isMinusSignAsPartOfNegativeValue(char character, StringBuilder number, List<Object> tokens)
+    {
+        return character == '-' && number.length() == 0 && beginningOfValue(tokens);
+    }
+
+    private boolean beginningOfValue(List<Object> tokens)
+    {
+        return tokens.isEmpty() || tokens.get(tokens.size()-1).equals("(");
+    }
+
+    public List<Object> toReversePolishNotation(List<Object> tokens)
+    {
+        List<Object> output = new ArrayList<>();
+        Stack<Object> stack = new Stack<>();
+
+        for (Object token : tokens)
         {
-            if (isNumeric(token))
+            if (token instanceof Number)
             {
                 output.add(token);
                 continue;
@@ -83,11 +124,11 @@ public class ExpressionProcessor
         return output;
     }
 
-    private void emptyStackUntilOpenParenthesis(Stack<String> stack, List<String> output)
+    private void emptyStackUntilOpenParenthesis(Stack<Object> stack, List<Object> output)
     {
         while (true)
         {
-            String tokenFromStack = stack.pop();
+            Object tokenFromStack = stack.pop();
             if (isOperator(tokenFromStack))
             {
                 output.add(tokenFromStack);
@@ -101,11 +142,11 @@ public class ExpressionProcessor
         }
     }
 
-    private void emptyStackFromRemainingOperators(Stack<String> stack, List<String> output)
+    private void emptyStackFromRemainingOperators(Stack<Object> stack, List<Object> output)
     {
         while (!stack.isEmpty())
         {
-            String token = stack.pop();
+            Object token = stack.pop();
             if (isOperator(token))
             {
                 output.add(token);
@@ -115,17 +156,40 @@ public class ExpressionProcessor
         }
     }
 
-    private boolean shouldBeTaken(String operatorOnStack, String operatorFromTokens) // TODO: rename
+    private boolean shouldBeTaken(Object operatorOnStack, Object operatorFromTokens) // TODO: rename
     {
         return isOperator(operatorOnStack) && getImportance(operatorFromTokens) <= getImportance(operatorOnStack);
     }
 
-    private boolean isOperator(String token)
+    private boolean isParenthesis(char character)
+    {
+        return character == '(' || character == ')';
+    }
+
+    public boolean isNumber(String value)
+    {
+        try
+        {
+            numberFormat.parse(value);
+            return true;
+        }
+        catch (ParseException e)
+        {
+            return false;
+        }
+    }
+
+    private boolean isOperator(char character)
+    {
+        return isOperator(Character.toString(character));
+    }
+
+    private boolean isOperator(Object token)
     {
         return OPERATORS.contains(token);
     }
 
-    private int getImportance(String operatorFromTokens)
+    private int getImportance(Object operatorFromTokens)
     {
         if (operatorFromTokens.equals("+") || operatorFromTokens.equals("-")) // TODO: use enums for operators?
         {
@@ -138,27 +202,27 @@ public class ExpressionProcessor
         throw new UnsupportedOperationException();
     }
 
-    public double calculateReversePolishNotation(List<String> tokens)
+    public double calculateReversePolishNotation(List<Object> tokens) throws ParseException
     {
         if (tokens.isEmpty())
         {
             return 0;
         }
-        Stack<String> stack = new Stack<>();
-        for (String token : tokens)
+        Stack<Object> stack = new Stack<>();
+        for (Object token : tokens)
         {
-            if (isNumeric(token))
+            if (token instanceof Number)
             {
                 stack.push(token);
                 continue;
             }
             if (isOperator(token))
             {
-                double result = calculate(token, valueOf(stack.pop()), valueOf(stack.pop()));
-                stack.push(Double.toString(result));
+                double result = calculate(token, (Double)stack.pop(), (Double)stack.pop());
+                stack.push(result);
             }
         }
-        double result = valueOf(stack.pop());
+        double result = (Double)stack.pop();
         if (!stack.isEmpty())
         {
             throw new IllegalStateException();
@@ -166,7 +230,12 @@ public class ExpressionProcessor
         return result;
     }
 
-    private double calculate(String operator, double value2, double value1)
+    private double toDouble(String value) throws ParseException
+    {
+        return numberFormat.parse(value).doubleValue();
+    }
+
+    private double calculate(Object operator, double value2, double value1)
     {
         if (operator.equals("+"))
         {
