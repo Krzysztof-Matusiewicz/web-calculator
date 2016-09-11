@@ -58,6 +58,10 @@ public class RpnCalculator
         {
             return value1 / value2;
         }
+        if (operator.equals("^"))
+        {
+            return Math.pow(value1, value2);
+        }
         throw new UnsupportedOperationException();
     }
 

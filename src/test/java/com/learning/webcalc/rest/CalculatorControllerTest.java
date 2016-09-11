@@ -72,6 +72,24 @@ public class CalculatorControllerTest
         performTestFor("1+(8*10+(98/3*(20)-8))", 726.3333333333333d);
     }
 
+    @Test
+    public void getCalculateExpressionWithExponentiation() throws Exception
+    {
+        performTestFor("4^3^2", 262144);
+    }
+
+    @Test
+    public void getCalculateExpressionWithExponentiationAndBrackets() throws Exception
+    {
+        performTestFor("5^(4-1)^2", 1953125);
+    }
+
+    @Test
+    public void getCalculateComplexExpressionWithExponentiation() throws Exception
+    {
+        performTestFor("3+4*2/(1-5)^2", 3.5);
+    }
+
     private void performTestFor(String inputExpression, double expectedResult) throws Exception
     {
         mvc.perform(MockMvcRequestBuilders.get("/calculate")

@@ -50,8 +50,8 @@ public class ExpressionProcessorTest
     public void shouldTokenize() throws ParseException
     {
         // given
-        final String testExpression = "1+(8*10+(98/3*(20)-8))"; // TODO: sqrt &  root
-        final List<Object> tokens = asList(1d, "+", "(", 8d, "*", 10d, "+", "(", 98d, "/", 3d, "*", "(", 20d, ")", "-", 8d, ")", ")" );
+        final String testExpression = "1+(8*10+(98/3^(2)-8))";
+        final List<Object> tokens = asList(1d, "+", "(", 8d, "*", 10d, "+", "(", 98d, "/", 3d, "^", "(", 2d, ")", "-", 8d, ")", ")" );
 
         // when
         List<Object> result = objectUnderTest.tokenize(testExpression);

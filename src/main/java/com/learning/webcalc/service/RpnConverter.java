@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import static com.learning.webcalc.service.util.ExpressionUtil.isOperator;
+import static com.learning.webcalc.service.util.ExpressionUtil.*;
 
 @Component
 public class RpnConverter
@@ -26,7 +26,10 @@ public class RpnConverter
             }
             if (isOperator(token))
             {
-                while (!stack.isEmpty() && shouldBeTaken(stack.peek(), token))
+                while (!stack.isEmpty() && (
+                        leftAssociativeWithLessOrEqualPriority(token, stack.peek()) ||
+                        rightAssociativeWithLessPriority(token, stack.peek())
+                    ))
                 {
                     output.add(stack.pop());
                 }
@@ -81,22 +84,14 @@ public class RpnConverter
         }
     }
 
-    private boolean shouldBeTaken(Object operatorOnStack, Object operatorFromTokens) // TODO: rename
+    private boolean leftAssociativeWithLessOrEqualPriority(Object operatorFromTokens, Object operatorOnStack) // TODO: rename
     {
-        return isOperator(operatorOnStack) && getImportance(operatorFromTokens) <= getImportance(operatorOnStack);
+        return isLeftAssociativeOperator(operatorOnStack) && getImportance(operatorFromTokens) <= getImportance(operatorOnStack);
     }
 
-    private int getImportance(Object operatorFromTokens)
+    private boolean rightAssociativeWithLessPriority(Object operatorFromTokens, Object operatorOnStack)
     {
-        if (operatorFromTokens.equals("+") || operatorFromTokens.equals("-")) // TODO: use enums for operators?
-        {
-            return 1;
-        }
-        if (operatorFromTokens.equals("*") || operatorFromTokens.equals("/"))
-        {
-            return 2;
-        }
-        throw new UnsupportedOperationException();
+        return isRightAssociativeOperator(operatorOnStack) && getImportance(operatorFromTokens) < getImportance(operatorOnStack);
     }
 
 }

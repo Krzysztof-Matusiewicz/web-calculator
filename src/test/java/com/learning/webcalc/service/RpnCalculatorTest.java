@@ -36,13 +36,26 @@ public class RpnCalculatorTest
     public void shouldCalculateComplexExpression() throws ParseException
     {
         // given
-        final List<Object> rpnTokens = asList(2d, 7d, "+", 3d,  "/", 3d,  14d, "-", 4d, "*", "+", 2d, "/");
+        final List<Object> rpnTokens = asList(2d, 7d, "+", 3d, "/", 3d, 14d, "-", 4d, "*", "+", 2d, "/");
 
         // when
         double result = objectUnderTest.calculate(rpnTokens);
 
         // then
         assertThat(result).isEqualTo(-20.5);
+    }
+
+    @Test
+    public void shouldCalculateExpressionWithExponentiation() throws ParseException
+    {
+        // given
+        final List<Object> rpnTokens = asList(5d, 4d, 1d, "-", 2d, "^", "^");
+
+        // when
+        double result = objectUnderTest.calculate(rpnTokens);
+
+        // then
+        assertThat(result).isEqualTo(1953125);
     }
 
     @Test

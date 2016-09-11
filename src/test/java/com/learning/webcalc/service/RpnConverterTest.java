@@ -47,6 +47,48 @@ public class RpnConverterTest
     }
 
     @Test
+    public void shouldConvertExpressionWithExponentiation()
+    {
+        // given
+        final List<Object> testTokens = asList(4, "^", 3, "^", 2);
+        final List<Object> rpnTokens = asList(4, 3, 2, "^", "^");
+
+        // when
+        List<Object> result = objectUnderTest.convert(testTokens);
+
+        // then
+        assertThat(result).containsOnlyElementsOf(rpnTokens);
+    }
+
+    @Test
+    public void shouldConvertExpressionWithExponentiationAndBrackets()
+    {
+        // given
+        final List<Object> testTokens = asList(5, "^", "(", 4, "-", 1, ")", "^", 2);
+        final List<Object> rpnTokens = asList(5, 4, 1, "-", 2, "^", "^");
+
+        // when
+        List<Object> result = objectUnderTest.convert(testTokens);
+
+        // then
+        assertThat(result).containsOnlyElementsOf(rpnTokens);
+    }
+
+    @Test
+    public void shouldConvertComplexExpressionWithExponentiation()
+    {
+        // given
+        final List<Object> testTokens = asList(3, "+", 4, "*", 2, "/", "(", 1, "-", 5, ")", "^", 2);
+        final List<Object> rpnTokens = asList(3, 4, 2, "*", 1, 5, "-", 2, "^", "/", "+");
+
+        // when
+        List<Object> result = objectUnderTest.convert(testTokens);
+
+        // then
+        assertThat(result).containsOnlyElementsOf(rpnTokens);
+    }
+
+    @Test
     public void shouldConvertEmptyExpression()
     {
         // given
