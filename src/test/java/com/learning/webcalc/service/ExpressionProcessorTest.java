@@ -3,6 +3,9 @@ package com.learning.webcalc.service;
 import com.learning.webcalc.service.api.CalculationException;
 import org.junit.Test;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.List;
 
@@ -14,11 +17,16 @@ public class ExpressionProcessorTest
 
     private static final String EMPTY_EXPRESSION = "";
 
+    private final char decimalSeparator;
+
     private ExpressionProcessor objectUnderTest;
 
     public ExpressionProcessorTest()
     {
         this.objectUnderTest = new ExpressionProcessor();
+        DecimalFormat decimalFormat = (DecimalFormat)NumberFormat.getInstance();
+        DecimalFormatSymbols symbols = decimalFormat.getDecimalFormatSymbols();
+        decimalSeparator = symbols.getDecimalSeparator();
     }
 
     @Test
@@ -27,6 +35,34 @@ public class ExpressionProcessorTest
         // given
         final String testExpression = " 5 + [(7-sqrt{ 43 *3})/2 ] ";
         final String cleanExpression = "5+((7-s(43*3))/2)";
+
+        // when
+        String result = objectUnderTest.clean(testExpression);
+
+        // then
+        assertThat(result).isEqualTo(cleanExpression);
+    }
+
+    @Test
+    public void shouldCleanReplaceCommaSeparatorsToDefault()
+    {
+        // given
+        final String testExpression = "5,5+4,65*(0,123-1)";
+        final String cleanExpression = testExpression.replace(',', decimalSeparator);
+
+        // when
+        String result = objectUnderTest.clean(testExpression);
+
+        // then
+        assertThat(result).isEqualTo(cleanExpression);
+    }
+
+    @Test
+    public void shouldCleanReplacePeriodSeparatorsToDefault()
+    {
+        // given
+        final String testExpression = "5.5+4.65*(0.123-1)";
+        final String cleanExpression = testExpression.replace('.', decimalSeparator);
 
         // when
         String result = objectUnderTest.clean(testExpression);

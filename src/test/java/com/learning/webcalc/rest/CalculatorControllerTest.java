@@ -36,9 +36,16 @@ public class CalculatorControllerTest
     }
 
     @Test
-    public void getCalculateExpressionWithNonIntegers() throws Exception
+    public void getCalculateExpressionWithNonIntegersWithPeriodSeparator() throws Exception
     {
-        String expression = String.format("(%.2f+%.3f)*%.1f-%.2f", 2.45, 567.789, 0.4, .99);
+        String expression = String.format("(2.45+567.789)*0.4-0.99");
+        performTestFor(expression, 227.1056);
+    }
+
+    @Test
+    public void getCalculateExpressionWithNonIntegersWithCommaSeparator() throws Exception
+    {
+        String expression = String.format("(2,45+567,789)*0,4-0,99");
         performTestFor(expression, 227.1056);
     }
 

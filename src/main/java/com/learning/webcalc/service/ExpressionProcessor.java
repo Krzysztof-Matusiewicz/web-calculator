@@ -79,6 +79,7 @@ public class ExpressionProcessor
                 .replaceAll("\\}", ")")
                 .replaceAll("\\[", "(")
                 .replaceAll("\\]", ")")
+                .replaceAll("\\.|,", Character.toString(decimalSeparator))
                 .replaceAll("sqrt", "s");
     }
 
