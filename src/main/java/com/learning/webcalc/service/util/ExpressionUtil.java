@@ -34,7 +34,7 @@ public class ExpressionUtil
 
     public static int getImportance(Object operator)
     {
-        if (operator.equals("+") || operator.equals("-")) // TODO: use enums for operators?
+        if (operator.equals("+") || operator.equals("-"))
         {
             return 1;
         }

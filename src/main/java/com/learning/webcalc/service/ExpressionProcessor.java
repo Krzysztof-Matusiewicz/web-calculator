@@ -39,36 +39,42 @@ public class ExpressionProcessor
                 .replaceAll("sqrt", "s");
     }
 
-    public List<Object> tokenize(String expression) throws ParseException
+    public List<Object> tokenize(String expression)
     {
-        StringBuilder number = new StringBuilder();
-        List<Object> tokens = new ArrayList<>();
-
-        for (char c : expression.toCharArray())
+        try
         {
-            if (isDigit(c) || isDecimalSeparator(c) || isMinusSignAsPartOfNegativeValue(c, number, tokens))
+            StringBuilder number = new StringBuilder();
+            List<Object> tokens = new ArrayList<>();
+            for (char c : expression.toCharArray())
             {
-                number.append(c);
-            }
-            else if (isOperator(c) || isParenthesis(c) || isFunction(c))
-            {
-                if (number.length() > 0)
+                if (isDigit(c) || isDecimalSeparator(c) || isMinusSignAsPartOfNegativeValue(c, number, tokens))
                 {
-                    tokens.add(toDouble(number.toString()));
-                    number = new StringBuilder();
+                    number.append(c);
                 }
-                tokens.add(Character.toString(c)); // TODO: keep character
+                else if (isOperator(c) || isParenthesis(c) || isFunction(c))
+                {
+                    if (number.length() > 0)
+                    {
+                        tokens.add(toDouble(number.toString()));
+                        number = new StringBuilder();
+                    }
+                    tokens.add(Character.toString(c));
+                }
+                else
+                {
+                    throw new UnsupportedOperationException();
+                }
             }
-            else
+            if (number.length() > 0)
             {
-                throw new UnsupportedOperationException();
+                tokens.add(toDouble(number.toString()));
             }
+            return tokens;
         }
-        if (number.length() > 0)
+        catch (Exception e)
         {
-            tokens.add(toDouble(number.toString()));
+            throw new RuntimeException(e);
         }
-        return tokens;
     }
 
     private boolean isDecimalSeparator(char character)

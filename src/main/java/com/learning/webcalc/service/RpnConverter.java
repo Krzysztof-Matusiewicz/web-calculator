@@ -19,17 +19,15 @@ public class RpnConverter
 
         for (Object token : tokens)
         {
-            if (token instanceof Number) // TODO: else if
+            if (token instanceof Number)
             {
                 output.add(token);
-                continue;
             }
-            if (isFunction(token))
+            else if (isFunction(token))
             {
                 stack.push(token);
-                continue;
             }
-            if (isOperator(token))
+            else if (isOperator(token))
             {
                 while (!stack.isEmpty() && (
                         leftAssociativeWithLessOrEqualPriority(token, stack.peek()) ||
@@ -39,23 +37,23 @@ public class RpnConverter
                     output.add(stack.pop());
                 }
                 stack.push(token);
-                continue;
             }
-            if (token.equals("("))
+            else if (token.equals("("))
             {
                 stack.push(token);
-                continue;
             }
-            if (token.equals(")"))
+            else if (token.equals(")"))
             {
                 emptyStackUntilOpenParenthesis(stack, output);
                 if (!stack.isEmpty() && isFunction(stack.peek()))
                 {
                     output.add(stack.pop());
                 }
-                continue;
             }
-            throw new IllegalStateException();
+            else
+            {
+                throw new IllegalStateException();
+            }
         }
         emptyStackFromRemainingOperators(stack, output);
         return output;
@@ -93,7 +91,7 @@ public class RpnConverter
         }
     }
 
-    private boolean leftAssociativeWithLessOrEqualPriority(Object operatorFromTokens, Object operatorOnStack) // TODO: rename
+    private boolean leftAssociativeWithLessOrEqualPriority(Object operatorFromTokens, Object operatorOnStack)
     {
         return isLeftAssociativeOperator(operatorOnStack) && getImportance(operatorFromTokens) <= getImportance(operatorOnStack);
     }

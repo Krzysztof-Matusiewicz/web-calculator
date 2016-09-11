@@ -2,7 +2,6 @@ package com.learning.webcalc.service;
 
 import org.springframework.stereotype.Component;
 
-import java.text.ParseException;
 import java.util.List;
 import java.util.Stack;
 
@@ -13,11 +12,11 @@ import static com.learning.webcalc.service.util.ExpressionUtil.isOperator;
 public class RpnCalculator
 {
 
-    public double calculate(List<Object> tokens) throws ParseException
+    public Double calculate(List<Object> tokens)
     {
         if (tokens.isEmpty())
         {
-            return 0;
+            return 0d;
         }
         Stack<Object> stack = new Stack<>();
         for (Object token : tokens)
