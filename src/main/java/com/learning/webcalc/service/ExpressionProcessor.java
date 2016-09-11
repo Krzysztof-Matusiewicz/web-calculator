@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import static com.learning.webcalc.service.util.ExpressionUtil.isArgumentSeparator;
 import static com.learning.webcalc.service.util.ExpressionUtil.isOperator;
 import static java.lang.Character.isDigit;
 import static java.lang.Character.isLetter;
@@ -80,7 +81,8 @@ public class ExpressionProcessor
                 .replaceAll("\\[", "(")
                 .replaceAll("\\]", ")")
                 .replaceAll("\\.|,", Character.toString(decimalSeparator))
-                .replaceAll("sqrt", "s");
+                .replaceAll("sqrt", "s")
+                .replaceAll("integral", "i");
     }
 
     public List<Object> tokenize(String expression)
@@ -105,7 +107,7 @@ public class ExpressionProcessor
             {
                 number.append(c);
             }
-            else if (isOperator(c) || isParenthesis(c) || isFunction(c))
+            else if (isOperator(c) || isParenthesis(c) || isFunction(c) || isArgumentSeparator(c))
             {
                 if (number.length() > 0)
                 {

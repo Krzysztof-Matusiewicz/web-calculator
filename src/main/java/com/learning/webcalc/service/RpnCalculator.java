@@ -1,6 +1,7 @@
 package com.learning.webcalc.service;
 
 import com.learning.webcalc.service.api.CalculationException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,6 +13,14 @@ import static com.learning.webcalc.service.util.ExpressionUtil.isOperator;
 @Component
 public class RpnCalculator
 {
+
+    private IntegralCalculator integralCalculator;
+
+    @Autowired
+    public RpnCalculator(IntegralCalculator integralCalculator)
+    {
+        this.integralCalculator = integralCalculator;
+    }
 
     public Double calculate(List<Object> tokens)
     {
@@ -83,6 +92,14 @@ public class RpnCalculator
         if (token.equals("s"))
         {
             return Math.sqrt((Double)stack.pop());
+        }
+        if (token.equals("i"))
+        {
+            int intervals = (int)Math.round((Double)stack.pop());
+            int threads = (int)Math.round((Double)stack.pop());
+            double intervalTo = (Double)stack.pop();
+            double intervalFrom = (Double)stack.pop();
+            return integralCalculator.calc(intervalFrom, intervalTo, intervals, threads);
         }
         throw CalculationException.forUnexpectedToken(token);
     }

@@ -2,6 +2,7 @@ package com.learning.webcalc.service.util;
 
 import java.util.List;
 
+import static com.learning.webcalc.service.util.Constants.FUNCTION_ARGUMENT;
 import static java.lang.Character.isLetter;
 import static java.util.Arrays.asList;
 
@@ -53,6 +54,16 @@ public class ExpressionUtil
     {
         String tokenAsString = token.toString();
         return tokenAsString.length() == 1 && isLetter(tokenAsString.charAt(0));
+    }
+
+    public static boolean isArgumentSeparator(char character)
+    {
+        return Character.toString(character).equals(FUNCTION_ARGUMENT);
+    }
+
+    public static boolean isArgumentSeparator(Object token)
+    {
+        return token.equals(FUNCTION_ARGUMENT);
     }
 
 }

@@ -1,6 +1,11 @@
 package com.learning.webcalc.service;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.text.ParseException;
 import java.util.List;
@@ -8,15 +13,22 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.MockitoAnnotations.initMocks;
 
+@RunWith(MockitoJUnitRunner.class)
 public class RpnCalculatorTest
 {
 
+    @Mock
+    private IntegralCalculator integralCalculatorMock;
+
     private RpnCalculator objectUnderTest;
 
-    public RpnCalculatorTest()
+    @Before
+    public void setUp()
     {
-        this.objectUnderTest = new RpnCalculator();
+        initMocks(this);
+        this.objectUnderTest = new RpnCalculator(integralCalculatorMock);
     }
 
     @Test
@@ -69,6 +81,20 @@ public class RpnCalculatorTest
 
         // then
         assertThat(result).isEqualTo(4);
+    }
+
+    @Test
+    public void shouldCalculateExpressionWithIntegral() throws ParseException
+    {
+        // given
+        final List<Object> rpnTokens = asList(1d, 8d, 10d, "*", 4d, 5d, "-", 9d, 2d, "i", 3d, "/", "+");
+        Mockito.stub(integralCalculatorMock.calc(80d, -1d, 2, 9)).toReturn(999d);
+
+        // when
+        double result = objectUnderTest.calculate(rpnTokens);
+
+        // then
+        assertThat(result).isEqualTo(334);
     }
 
     @Test

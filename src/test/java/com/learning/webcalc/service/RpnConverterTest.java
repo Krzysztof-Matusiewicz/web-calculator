@@ -103,6 +103,20 @@ public class RpnConverterTest
     }
 
     @Test
+    public void shouldConvertExpressionWithIntegral()
+    {
+        // given
+        final List<Object> testTokens = asList(1, "+", "i", "(", 8, "*", 10, ";", 4, "-", 5, ";", 13, ")", "/", 3);
+        final List<Object> rpnTokens = asList(1, 8, 10, "*", 4, 5, "-", 13, "i", 3, "/", "+");
+
+        // when
+        List<Object> result = objectUnderTest.convert(testTokens);
+
+        // then
+        assertThat(result).containsExactlyElementsOf(rpnTokens);
+    }
+
+    @Test
     public void shouldConvertEmptyExpression()
     {
         // given

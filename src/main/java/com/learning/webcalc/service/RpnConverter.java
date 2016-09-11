@@ -28,6 +28,13 @@ public class RpnConverter
             {
                 stack.push(token);
             }
+            else if (isArgumentSeparator(token))
+            {
+                while (!stack.peek().equals("("))
+                {
+                    output.add(stack.pop());
+                }
+            }
             else if (isOperator(token))
             {
                 while (!stack.isEmpty() && (

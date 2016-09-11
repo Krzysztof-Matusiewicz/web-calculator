@@ -24,7 +24,7 @@ public class ExpressionProcessorTest
     public ExpressionProcessorTest()
     {
         this.objectUnderTest = new ExpressionProcessor();
-        DecimalFormat decimalFormat = (DecimalFormat)NumberFormat.getInstance();
+        DecimalFormat decimalFormat = (DecimalFormat) NumberFormat.getInstance();
         DecimalFormatSymbols symbols = decimalFormat.getDecimalFormatSymbols();
         decimalSeparator = symbols.getDecimalSeparator();
     }
@@ -33,8 +33,8 @@ public class ExpressionProcessorTest
     public void shouldClean()
     {
         // given
-        final String testExpression = " 5 + [(7-sqrt{ 43 *3})/2 ] ";
-        final String cleanExpression = "5+((7-s(43*3))/2)";
+        final String testExpression = " 5 + [(7-{ 43 *3})/2 ] ";
+        final String cleanExpression = "5+((7-(43*3))/2)";
 
         // when
         String result = objectUnderTest.clean(testExpression);
@@ -49,6 +49,34 @@ public class ExpressionProcessorTest
         // given
         final String testExpression = "5,5+4,65*(0,123-1)";
         final String cleanExpression = testExpression.replace(',', decimalSeparator);
+
+        // when
+        String result = objectUnderTest.clean(testExpression);
+
+        // then
+        assertThat(result).isEqualTo(cleanExpression);
+    }
+
+    @Test
+    public void shouldCleanTranslateSqrt()
+    {
+        // given
+        final String testExpression = "sqrt(3+8)-(sqrt(-4))^sqrt(0)";
+        final String cleanExpression = "s(3+8)-(s(-4))^s(0)";
+
+        // when
+        String result = objectUnderTest.clean(testExpression);
+
+        // then
+        assertThat(result).isEqualTo(cleanExpression);
+    }
+
+    @Test
+    public void shouldCleanTranslateIntegral()
+    {
+        // given
+        final String testExpression = "integral(3;4;5;6)-(integral(-4))^integral(0)";
+        final String cleanExpression = "i(3;4;5;6)-(i(-4))^i(0)";
 
         // when
         String result = objectUnderTest.clean(testExpression);
@@ -146,6 +174,20 @@ public class ExpressionProcessorTest
         // given
         final String testExpression = "1+s(8*10+1)/3";
         final List<Object> tokens = asList(1d, "+", "s", "(", 8d, "*", 10d, "+", 1d, ")", "/", 3d);
+
+        // when
+        List<Object> result = objectUnderTest.tokenize(testExpression);
+
+        // then
+        assertThat(result).containsExactlyElementsOf(tokens);
+    }
+
+    @Test
+    public void shouldTokenizeWithIntegral() throws ParseException
+    {
+        // given
+        final String testExpression = "1+i(8*10;4-5;13)/3";
+        final List<Object> tokens = asList(1d, "+", "i", "(", 8d, "*", 10d, ";", 4d, "-", 5d, ";", 13d, ")", "/", 3d);
 
         // when
         List<Object> result = objectUnderTest.tokenize(testExpression);
