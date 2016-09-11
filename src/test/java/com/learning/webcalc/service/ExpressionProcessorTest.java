@@ -6,7 +6,6 @@ import java.text.ParseException;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ExpressionProcessorTest
@@ -99,87 +98,6 @@ public class ExpressionProcessorTest
 
         // then
         assertThat(result).isEmpty();
-    }
-
-    @Test
-    public void shouldToReversePolishNotationSimpleExpression()
-    {
-        // given
-        final List<Object> testTokens = asList(3, "+", 4, "*", 2);
-        final List<Object> rpnTokens = asList(3, 4, 2, "*", "+");
-
-        // when
-        List<Object> result = objectUnderTest.toReversePolishNotation(testTokens);
-
-        // then
-        assertThat(result).containsOnlyElementsOf(rpnTokens);
-    }
-
-    @Test
-    public void shouldToReversePolishNotationComplexExpression()
-    {
-        // given
-        final List<Object> testTokens = asList("(", "(", 2, "+", 7, ")", "/", 3, "+", "(", 3, "-", 14, ")", "*", 4, ")", "/", 2);
-        final List<Object> rpnTokens = asList(2, 7, "+", 3,  "/", 3, 14, "-", 4, "*", "+", 2, "/");
-
-        // when
-        List<Object> result = objectUnderTest.toReversePolishNotation(testTokens);
-
-        // then
-        assertThat(result).containsOnlyElementsOf(rpnTokens);
-    }
-
-    @Test
-    public void shouldToReversePolishNotationEmptyExpression()
-    {
-        // given
-        final List<Object> testTokens = emptyList();
-        final List<Object> rpnTokens = emptyList();
-
-        // when
-        List<Object> result = objectUnderTest.toReversePolishNotation(testTokens);
-
-        // then
-        assertThat(result).containsOnlyElementsOf(rpnTokens);
-    }
-
-    @Test
-    public void shouldCalculateReversePolishNotationSimpleExpression() throws ParseException
-    {
-        // given
-        final List<Object> rpnTokens = asList(3d, 4d, 2d, "*", "+");
-
-        // when
-        double result = objectUnderTest.calculateReversePolishNotation(rpnTokens);
-
-        // then
-        assertThat(result).isEqualTo(11);
-    }
-
-    @Test
-    public void shouldCalculateReversePolishNotationComplexExpression() throws ParseException
-    {
-        // given
-        final List<Object> rpnTokens = asList(2d, 7d, "+", 3d,  "/", 3d,  14d, "-", 4d, "*", "+", 2d, "/");
-
-        // when
-        double result = objectUnderTest.calculateReversePolishNotation(rpnTokens);
-
-        // then
-        assertThat(result).isEqualTo(-20.5);
-    }
-
-    @Test
-    public void shouldCalculateReversePolishNotationEmptyExpression() throws ParseException
-    {
-        // given
-        final List<Object> rpnTokens = emptyList();
-
-        // when
-        double result = objectUnderTest.calculateReversePolishNotation(rpnTokens);
-
-        // then
-        assertThat(result).isEqualTo(0);
     }
 
 }
