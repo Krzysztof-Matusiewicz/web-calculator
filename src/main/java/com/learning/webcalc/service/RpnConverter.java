@@ -1,5 +1,6 @@
 package com.learning.webcalc.service;
 
+import com.learning.webcalc.service.api.CalculationException;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ public class RpnConverter
             }
             else
             {
-                throw new IllegalStateException();
+                throw CalculationException.forUnexpectedToken(token);
             }
         }
         emptyStackFromRemainingOperators(stack, output);
@@ -63,17 +64,17 @@ public class RpnConverter
     {
         while (true)
         {
-            Object tokenFromStack = stack.pop();
-            if (isOperator(tokenFromStack))
+            Object token = stack.pop();
+            if (isOperator(token))
             {
-                output.add(tokenFromStack);
+                output.add(token);
                 continue;
             }
-            if (tokenFromStack.equals("("))
+            if (token.equals("("))
             {
                 return;
             }
-            throw new IllegalStateException();
+            throw CalculationException.forUnexpectedToken(token);
         }
     }
 
@@ -87,7 +88,7 @@ public class RpnConverter
                 output.add(token);
                 continue;
             }
-            throw new IllegalStateException();
+            throw CalculationException.forUnexpectedToken(token);
         }
     }
 
@@ -100,7 +101,5 @@ public class RpnConverter
     {
         return isRightAssociativeOperator(operatorOnStack) && getImportance(operatorFromTokens) < getImportance(operatorOnStack);
     }
-
-
 
 }

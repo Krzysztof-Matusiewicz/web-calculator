@@ -1,5 +1,6 @@
 package com.learning.webcalc.service;
 
+import com.learning.webcalc.service.api.CalculationException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -37,13 +38,13 @@ public class RpnCalculator
             }
             else
             {
-                throw new UnsupportedOperationException();
+                throw CalculationException.forUnexpectedToken(token);
             }
         }
         double result = (Double)stack.pop();
         if (!stack.isEmpty())
         {
-            throw new IllegalStateException();
+            throw new IllegalStateException("Stack should be empty after processing whole expression");
         }
         return result;
     }
@@ -64,13 +65,17 @@ public class RpnCalculator
         }
         if (operator.equals("/"))
         {
+            if (value2 == 0)
+            {
+                throw CalculationException.forDivisionByZero();
+            }
             return value1 / value2;
         }
         if (operator.equals("^"))
         {
             return Math.pow(value1, value2);
         }
-        throw new UnsupportedOperationException();
+        throw CalculationException.forUnexpectedToken(operator);
     }
 
     private double executeFunction(Object token, Stack<Object> stack)
@@ -79,7 +84,7 @@ public class RpnCalculator
         {
             return Math.sqrt((Double)stack.pop());
         }
-        throw new UnsupportedOperationException();
+        throw CalculationException.forUnexpectedToken(token);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.learning.webcalc.service;
 
+import com.learning.webcalc.service.api.CalculationException;
 import org.springframework.stereotype.Component;
 
 import java.text.DecimalFormat;
@@ -8,6 +9,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import static com.learning.webcalc.service.util.ExpressionUtil.isOperator;
 import static java.lang.Character.isDigit;
@@ -28,6 +30,47 @@ public class ExpressionProcessor
         decimalSeparator = symbols.getDecimalSeparator();
     }
 
+    public String validateBrackets(String expression)
+    {
+        Stack<Character> brackets = new Stack<>();
+        for (char c : expression.toCharArray())
+        {
+            if (c == '(' || c == '[' || c == '{')
+            {
+                brackets.push(c);
+            }
+            if (c == ')' || c == ']' || c == '}')
+            {
+                if (brackets.isEmpty() || !bracketsMatch(brackets.pop(), c))
+                {
+                    throw CalculationException.forInvalidBrackets();
+                }
+            }
+        }
+        if (!brackets.isEmpty())
+        {
+            throw CalculationException.forInvalidBrackets();
+        }
+        return expression;
+    }
+
+    private boolean bracketsMatch(char openingBracket, char closingBracket)
+    {
+        if (openingBracket == '(' && closingBracket == ')')
+        {
+            return true;
+        }
+        if (openingBracket == '[' && closingBracket == ']')
+        {
+            return true;
+        }
+        if (openingBracket == '{' && closingBracket == '}')
+        {
+            return true;
+        }
+        return false;
+    }
+
     public String clean(String expression)
     {
         return expression
@@ -43,38 +86,43 @@ public class ExpressionProcessor
     {
         try
         {
-            StringBuilder number = new StringBuilder();
-            List<Object> tokens = new ArrayList<>();
-            for (char c : expression.toCharArray())
-            {
-                if (isDigit(c) || isDecimalSeparator(c) || isMinusSignAsPartOfNegativeValue(c, number, tokens))
-                {
-                    number.append(c);
-                }
-                else if (isOperator(c) || isParenthesis(c) || isFunction(c))
-                {
-                    if (number.length() > 0)
-                    {
-                        tokens.add(toDouble(number.toString()));
-                        number = new StringBuilder();
-                    }
-                    tokens.add(Character.toString(c));
-                }
-                else
-                {
-                    throw new UnsupportedOperationException();
-                }
-            }
-            if (number.length() > 0)
-            {
-                tokens.add(toDouble(number.toString()));
-            }
-            return tokens;
+            return tryTokenize(expression);
         }
-        catch (Exception e)
+        catch (ParseException e)
         {
-            throw new RuntimeException(e);
+            throw CalculationException.forProcessingError(e);
         }
+    }
+
+    private List<Object> tryTokenize(String expression) throws ParseException
+    {
+        StringBuilder number = new StringBuilder();
+        List<Object> tokens = new ArrayList<>();
+        for (char c : expression.toCharArray())
+        {
+            if (isDigit(c) || isDecimalSeparator(c) || isMinusSignAsPartOfNegativeValue(c, number, tokens))
+            {
+                number.append(c);
+            }
+            else if (isOperator(c) || isParenthesis(c) || isFunction(c))
+            {
+                if (number.length() > 0)
+                {
+                    tokens.add(toDouble(number.toString()));
+                    number = new StringBuilder();
+                }
+                tokens.add(Character.toString(c));
+            }
+            else
+            {
+                throw CalculationException.forUnexpectedToken(c);
+            }
+        }
+        if (number.length() > 0)
+        {
+            tokens.add(toDouble(number.toString()));
+        }
+        return tokens;
     }
 
     private boolean isDecimalSeparator(char character)

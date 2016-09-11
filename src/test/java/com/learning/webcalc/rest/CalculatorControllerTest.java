@@ -96,6 +96,46 @@ public class CalculatorControllerTest
         performTestFor("1+sqrt(8*10+1)/3", 4);
     }
 
+    @Test
+    public void getCalculateReturnErrorForDivisionByZero() throws Exception
+    {
+        mvc.perform(MockMvcRequestBuilders.get("/calculate")
+                .param("exp", "5+6/0-7")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", equalTo("Cannot divide by zero")));
+    }
+
+    @Test
+    public void getCalculateReturnErrorForMissingBracket() throws Exception
+    {
+        mvc.perform(MockMvcRequestBuilders.get("/calculate")
+                .param("exp", "(5+6)/2)-7")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", equalTo("At least one bracket is missing")));
+    }
+
+    @Test
+    public void getCalculateReturnErrorForUnexpectedToken() throws Exception
+    {
+        mvc.perform(MockMvcRequestBuilders.get("/calculate")
+                .param("exp", "5+6>2-7")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", equalTo("Unexpected token: '>'")));
+    }
+
+    @Test
+    public void getCalculateReturnErrorForOtherExpressionError() throws Exception
+    {
+        mvc.perform(MockMvcRequestBuilders.get("/calculate")
+                .param("exp", "2-+7")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.message", equalTo("Cannot execute expression. Check the expression value and try again.")));
+    }
+
     private void performTestFor(String inputExpression, double expectedResult) throws Exception
     {
         mvc.perform(MockMvcRequestBuilders.get("/calculate")

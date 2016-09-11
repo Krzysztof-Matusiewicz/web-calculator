@@ -1,11 +1,10 @@
 package com.learning.webcalc.rest;
 
+import com.learning.webcalc.service.api.CalculationException;
 import com.learning.webcalc.service.api.CalculatorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 
@@ -31,6 +30,20 @@ public class CalculatorController
     public CalculateResponse calculate(@RequestParam("exp") String expression) throws ParseException
     {
         return new CalculateResponse(calculatorService.calculate(expression));
+    }
+
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(CalculationException.class)
+    public ErrorResponse handleCalculationException(Exception exc)
+    {
+        return new ErrorResponse(exc.getMessage());
+    }
+
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Exception.class)
+    public ErrorResponse handleException(Exception exc)
+    {
+        return new ErrorResponse("Cannot execute expression. Check the expression value and try again.");
     }
 
 }

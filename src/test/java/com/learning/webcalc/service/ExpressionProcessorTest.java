@@ -1,5 +1,6 @@
 package com.learning.webcalc.service;
 
+import com.learning.webcalc.service.api.CalculationException;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -44,6 +45,49 @@ public class ExpressionProcessorTest
 
         // then
         assertThat(result).isEqualTo(EMPTY_EXPRESSION);
+    }
+
+    @Test
+    public void shouldValidateBrackets()
+    {
+        // given
+        String expression = "1+(8*10+[(98/3)^{2}-8])";
+
+        // when
+        String result = objectUnderTest.validateBrackets(expression);
+
+        // then
+        assertThat(result).isEqualTo(expression);
+    }
+
+    @Test(expected = CalculationException.class)
+    public void shouldValidateBracketsExplodeForMissingOpeningBracket()
+    {
+        // given
+        String expression = "1+8*10/3)";
+
+        // when
+        objectUnderTest.validateBrackets(expression);
+    }
+
+    @Test(expected = CalculationException.class)
+    public void shouldValidateBracketsExplodeForMissingClosingBracket()
+    {
+        // given
+        String expression = "1+(8*10/3";
+
+        // when
+        objectUnderTest.validateBrackets(expression);
+    }
+
+    @Test(expected = CalculationException.class)
+    public void shouldValidateBracketsExplodeForClosingBracketNotMatchingOpening()
+    {
+        // given
+        String expression = "1+(8*[10)/3]";
+
+        // when
+        objectUnderTest.validateBrackets(expression);
     }
 
     @Test
