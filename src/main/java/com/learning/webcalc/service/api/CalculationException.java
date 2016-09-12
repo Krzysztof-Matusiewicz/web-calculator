@@ -33,4 +33,14 @@ public class CalculationException extends RuntimeException
         return new CalculationException("At least one bracket is missing");
     }
 
+    public static CalculationException forIntervalCountNotGreaterThanZero(int intervalCount)
+    {
+        return new CalculationException(String.format("Interval count should be greater than zero but was %s", intervalCount));
+    }
+
+    public static CalculationException forThreadCountNotGreaterThanZero(int threadCount)
+    {
+        return new CalculationException(String.format("Thread count should be greater than zero but was %s", threadCount));
+    }
+
 }

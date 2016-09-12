@@ -1,5 +1,6 @@
 package com.learning.webcalc.service;
 
+import com.learning.webcalc.service.api.CalculationException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -17,8 +18,12 @@ public class DefaultIntegralCalculator implements com.learning.webcalc.service.a
 
     public Double calculate(double lowerBound, double upperBound, int intervalCount, int threadCount) throws InterruptedException
     {
+        validateIntervalCount(intervalCount);
+        validateThreadCount(threadCount);
+
         final double boundSize = upperBound - lowerBound;
         final double intervalSize = boundSize / intervalCount;
+
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);
         List<WorkerThread> workers = IntStream.range(0, intervalCount)
                 .mapToObj(i -> new WorkerThread(lowerBound + i * intervalSize, intervalSize))
@@ -27,6 +32,22 @@ public class DefaultIntegralCalculator implements com.learning.webcalc.service.a
         executor.shutdown();
         executor.awaitTermination(10, TimeUnit.SECONDS);
         return workers.stream().map(WorkerThread::getResult).mapToDouble(Optional::get).sum();
+    }
+
+    private void validateIntervalCount(int intervalCount)
+    {
+        if (intervalCount <= 0)
+        {
+            throw CalculationException.forIntervalCountNotGreaterThanZero(intervalCount);
+        }
+    }
+
+    private void validateThreadCount(int threadCount)
+    {
+        if (threadCount <= 0)
+        {
+            throw CalculationException.forThreadCountNotGreaterThanZero(threadCount);
+        }
     }
 
     private static class WorkerThread implements Runnable

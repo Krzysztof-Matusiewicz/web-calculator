@@ -12,7 +12,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ExpressionProcessorTest
+public class DefaultExpressionProcessorTest
 {
 
     private static final String EMPTY_EXPRESSION = "";
@@ -21,7 +21,7 @@ public class ExpressionProcessorTest
 
     private DefaultExpressionProcessor objectUnderTest;
 
-    public ExpressionProcessorTest()
+    public DefaultExpressionProcessorTest()
     {
         this.objectUnderTest = new DefaultExpressionProcessor();
         DecimalFormat decimalFormat = (DecimalFormat) NumberFormat.getInstance();
@@ -202,6 +202,20 @@ public class ExpressionProcessorTest
         // given
         final String testExpression = "-5*(-18+(-3))";
         final List<Object> tokens = asList(-5d, "*", "(", -18d, "+", "(", -3d, ")", ")");
+
+        // when
+        List<Object> result = objectUnderTest.tokenize(testExpression);
+
+        // then
+        assertThat(result).containsExactlyElementsOf(tokens);
+    }
+
+    @Test
+    public void shouldTokenizeExpressionWithNegativeValuesInsideFunction() throws ParseException
+    {
+        // given
+        final String testExpression = "i(-4;-5;-6)";
+        final List<Object> tokens = asList("i", "(", -4d, ";", -5d, ";", -6d, ")");
 
         // when
         List<Object> result = objectUnderTest.tokenize(testExpression);

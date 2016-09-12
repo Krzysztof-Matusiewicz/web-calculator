@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import static com.learning.webcalc.service.util.Constants.FUNCTION_ARGUMENT;
 import static com.learning.webcalc.service.util.ExpressionUtil.isArgumentSeparator;
 import static com.learning.webcalc.service.util.ExpressionUtil.isOperator;
 import static java.lang.Character.isDigit;
@@ -141,7 +142,12 @@ public class DefaultExpressionProcessor implements ExpressionProcessor
 
     private boolean beginningOfValue(List<Object> tokens)
     {
-        return tokens.isEmpty() || tokens.get(tokens.size()-1).equals("(");
+        if (tokens.isEmpty())
+        {
+            return true;
+        }
+        Object lastToken = tokens.get(tokens.size()-1);
+        return lastToken.equals("(") || lastToken.equals(FUNCTION_ARGUMENT);
     }
 
     private boolean isParenthesis(char character)
