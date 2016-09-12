@@ -10,7 +10,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.closeTo;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -20,13 +20,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class CalculatorControllerIntegralTest
 {
 
+    private static final double TEST_PRECISION = 0.00000000001;
+
     @Autowired
     private MockMvc mvc;
     
     @Test
     public void getCalculateIntegralAsPartOfExpression() throws Exception
     {
-        performTestFor("5+integral(1;(6-4);(1.5*2);sqrt(16))^2", 105); // TODO: use real values
+        performTestFor("5+integral(1;(6-4);(1.5*2);sqrt(16))^2", 26.8161322856996);
     }
 
     private void performTestFor(String inputExpression, double expectedResult) throws Exception
@@ -35,7 +37,7 @@ public class CalculatorControllerIntegralTest
                 .param("exp", inputExpression)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result", equalTo(expectedResult)));
+                .andExpect(jsonPath("$.result", closeTo(expectedResult, TEST_PRECISION)));
     }
 
 }

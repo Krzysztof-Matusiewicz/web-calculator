@@ -8,14 +8,14 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class RpnConverterTest
+public class DefaultRpnConverterTest
 {
 
-    private RpnConverter objectUnderTest;
+    private DefaultRpnConverter objectUnderTest;
 
-    public RpnConverterTest()
+    public DefaultRpnConverterTest()
     {
-        this.objectUnderTest = new RpnConverter();
+        this.objectUnderTest = new DefaultRpnConverter();
     }
 
     @Test

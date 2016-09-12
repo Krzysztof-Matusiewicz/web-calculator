@@ -1,6 +1,7 @@
 package com.learning.webcalc.service;
 
 import com.learning.webcalc.service.api.CalculationException;
+import com.learning.webcalc.service.api.ExpressionProcessor;
 import org.springframework.stereotype.Component;
 
 import java.text.DecimalFormat;
@@ -17,14 +18,14 @@ import static java.lang.Character.isDigit;
 import static java.lang.Character.isLetter;
 
 @Component
-public class ExpressionProcessor
+public class DefaultExpressionProcessor implements ExpressionProcessor
 {
 
     private final NumberFormat numberFormat;
 
     private final char decimalSeparator;
 
-    public ExpressionProcessor()
+    public DefaultExpressionProcessor()
     {
         numberFormat = NumberFormat.getInstance();
         DecimalFormatSymbols symbols = ((DecimalFormat)numberFormat).getDecimalFormatSymbols();

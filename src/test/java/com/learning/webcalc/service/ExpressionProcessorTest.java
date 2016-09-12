@@ -19,11 +19,11 @@ public class ExpressionProcessorTest
 
     private final char decimalSeparator;
 
-    private ExpressionProcessor objectUnderTest;
+    private DefaultExpressionProcessor objectUnderTest;
 
     public ExpressionProcessorTest()
     {
-        this.objectUnderTest = new ExpressionProcessor();
+        this.objectUnderTest = new DefaultExpressionProcessor();
         DecimalFormat decimalFormat = (DecimalFormat) NumberFormat.getInstance();
         DecimalFormatSymbols symbols = decimalFormat.getDecimalFormatSymbols();
         decimalSeparator = symbols.getDecimalSeparator();

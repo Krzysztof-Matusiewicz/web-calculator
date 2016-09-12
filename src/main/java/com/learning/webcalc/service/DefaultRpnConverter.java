@@ -10,9 +10,10 @@ import java.util.Stack;
 import static com.learning.webcalc.service.util.ExpressionUtil.*;
 
 @Component
-public class RpnConverter
+public class DefaultRpnConverter implements com.learning.webcalc.service.api.RpnConverter
 {
 
+    @Override
     public List<Object> convert(List<Object> tokens)
     {
         List<Object> output = new ArrayList<>();
