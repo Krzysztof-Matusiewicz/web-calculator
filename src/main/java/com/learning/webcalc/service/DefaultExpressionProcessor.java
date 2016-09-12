@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import static com.learning.webcalc.service.util.Constants.FUNCTION_ARGUMENT;
+import static com.learning.webcalc.service.util.Constants.*;
 import static com.learning.webcalc.service.util.ExpressionUtil.isArgumentSeparator;
 import static com.learning.webcalc.service.util.ExpressionUtil.isOperator;
 import static java.lang.Character.isDigit;
@@ -83,8 +83,8 @@ public class DefaultExpressionProcessor implements ExpressionProcessor
                 .replaceAll("\\[", "(")
                 .replaceAll("\\]", ")")
                 .replaceAll("\\.|,", Character.toString(decimalSeparator))
-                .replaceAll("sqrt", "s")
-                .replaceAll("integral", "i");
+                .replaceAll(SQRT_NAME, SQRT_SYMBOL)
+                .replaceAll(INTEGRAL_NAME, INTEGRAL_SYMBOL);
     }
 
     public List<Object> tokenize(String expression)
@@ -147,7 +147,7 @@ public class DefaultExpressionProcessor implements ExpressionProcessor
             return true;
         }
         Object lastToken = tokens.get(tokens.size()-1);
-        return lastToken.equals("(") || lastToken.equals(FUNCTION_ARGUMENT);
+        return lastToken.equals("(") || lastToken.equals(ARGUMENT_SEPARATOR);
     }
 
     private boolean isParenthesis(char character)
