@@ -1,4 +1,10 @@
-# web-calculator
+# Web Calculator
+
+Calculator application implemented with Reverse Polish notation.
+
+Example expression:
+
+    (2.5-3)*∫(2;[5+7];10;3)-√(80/2+3^2)  
 
 ## Building
 
