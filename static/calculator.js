@@ -7,6 +7,14 @@ var info = {
     },
     clear : function() {
         info.update("");
+    },
+    help : {
+        integral: function() {
+            info.update("<b>\u222Be<sup>x</sup> syntax:</b> \u222B(lowerBound;upperBound;intervals;threads)");
+        },
+        power: function() {
+            info.update("<b>x<sup>y</sup> syntax:</b> x^y");
+        }
     }
 };
 
@@ -49,7 +57,7 @@ var historyPanel = {
             .done(function(data) {
                 var historyHtml = "";
                 $.each(data.history.items.reverse(), function(i, item){
-                    historyHtml += "<li>" + item.expression + " = " + item.result + "</li>";
+                    historyHtml += "<li>" + calc.toDomain(item.expression) + " = " + item.result + "</li>";
                 });
                 $("#history").html(historyHtml);
             }).fail(function() {
@@ -66,18 +74,26 @@ var historyPanel = {
 
 var calc = {
     squareRoot : function() {
-        input.append("sqrt(");
+        input.append("\u221A(");
     },
     integral : function() {
-        input.append("integral(");
+        input.append("\u222B(");
     },
     clear : function() {
         input.setValue("0");
         info.clear();
     },
+    toDto : function(value) {
+        return value.replace("\u221A", "sqrt")
+                    .replace("\u222B", "integral")
+    },
+    toDomain : function(value) {
+        return value.replace("sqrt", "\u221A")
+                    .replace("integral", "\u222B");
+    },
     execute : function() {
         $.getJSON("/calculate", {
-            exp: input.getValue()
+            exp: calc.toDto(input.getValue())
         }).done(function(data) {
             info.update(input.getValue());
             input.setValue(String(data.result));
@@ -97,6 +113,8 @@ function init() {
     });
     $("td.squareRoot").bind("click", calc.squareRoot);
     $("td.integral").bind("click", calc.integral);
+    $("td.integral").hover(info.help.integral, info.clear);
+    $("td.power").hover(info.help.power, info.clear);
     $("td.backspace").bind("click", input.removeLastOutputCharacter);
     $("td.calculate").bind("click", calc.execute);
     $("td.history").bind("click", historyPanel.toggle);
