@@ -45,13 +45,15 @@ td.blank:hover {
     border: 1px #888888 solid;
 }
 
-#result {
+#input {
     text-align: right;
     font-size: 30px;
     font-weight: bold;
+    width: 100%;
+    border: none;
 }
 
-#message {
+#info {
     margin: 10px 2px 2px 2px;
     text-align: right;
     font-size: 14px;
