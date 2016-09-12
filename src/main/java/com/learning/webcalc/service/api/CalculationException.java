@@ -30,7 +30,7 @@ public class CalculationException extends RuntimeException
 
     public static CalculationException forInvalidBrackets()
     {
-        return new CalculationException("At least one bracket is missing");
+        return new CalculationException("Incorrect brackets");
     }
 
     public static CalculationException forIntervalCountNotGreaterThanZero(int intervalCount)

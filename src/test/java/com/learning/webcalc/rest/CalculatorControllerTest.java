@@ -120,7 +120,7 @@ public class CalculatorControllerTest
                 .param("exp", "(5+6)/2)-7")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message", equalTo("At least one bracket is missing")));
+                .andExpect(jsonPath("$.message", equalTo("Incorrect brackets")));
     }
 
     @Test
