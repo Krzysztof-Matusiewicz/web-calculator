@@ -112,46 +112,56 @@ public class DefaultExpressionProcessorTest
     }
 
     @Test
-    public void shouldValidateBrackets()
+    public void shouldValidateBracketsParity()
     {
         // given
         String expression = "1+(8*10+[(98/3)^{2}-8])";
 
         // when
-        String result = objectUnderTest.validateBrackets(expression);
+        String result = objectUnderTest.validateBracketsParity(expression);
 
         // then
         assertThat(result).isEqualTo(expression);
     }
 
     @Test(expected = CalculationException.class)
-    public void shouldValidateBracketsExplodeForMissingOpeningBracket()
+    public void shouldValidateBracketsParityExplodeForMissingOpeningBracket()
     {
         // given
         String expression = "1+8*10/3)";
 
         // when
-        objectUnderTest.validateBrackets(expression);
+        objectUnderTest.validateBracketsParity(expression);
     }
 
     @Test(expected = CalculationException.class)
-    public void shouldValidateBracketsExplodeForMissingClosingBracket()
+    public void shouldValidateBracketsParityExplodeForMissingClosingBracket()
     {
         // given
         String expression = "1+(8*10/3";
 
         // when
-        objectUnderTest.validateBrackets(expression);
+        objectUnderTest.validateBracketsParity(expression);
     }
 
     @Test(expected = CalculationException.class)
-    public void shouldValidateBracketsExplodeForClosingBracketNotMatchingOpening()
+    public void shouldValidateBracketsParityExplodeForClosingBracketNotMatchingOpening()
     {
         // given
         String expression = "1+(8*[10)/3]";
 
         // when
-        objectUnderTest.validateBrackets(expression);
+        objectUnderTest.validateBracketsParity(expression);
+    }
+
+    @Test(expected = CalculationException.class)
+    public void shouldValidateBracketsContentExplodeForEmptyBrackets()
+    {
+        // given
+        String expression = "1+()/3";
+
+        // when
+        objectUnderTest.validateBracketsContent(expression);
     }
 
     @Test

@@ -70,7 +70,7 @@ public class DefaultRpnConverter implements com.learning.webcalc.service.api.Rpn
 
     private void emptyStackUntilOpenParenthesis(Stack<Object> stack, List<Object> output)
     {
-        while (true)
+        while (!stack.isEmpty())
         {
             Object token = stack.pop();
             if (isOperator(token))
@@ -84,6 +84,7 @@ public class DefaultRpnConverter implements com.learning.webcalc.service.api.Rpn
             }
             throw CalculationException.forUnexpectedToken(token);
         }
+        throw CalculationException.forProcessingError();
     }
 
     private void emptyStackFromRemainingOperators(Stack<Object> stack, List<Object> output)

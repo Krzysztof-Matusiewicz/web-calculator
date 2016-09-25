@@ -134,6 +134,36 @@ public class CalculatorControllerTest
     }
 
     @Test
+    public void getCalculateReturnErrorForEmptyRoundBrackets() throws Exception
+    {
+        mvc.perform(MockMvcRequestBuilders.get("/calculate")
+                .param("exp", "()")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", equalTo("Incorrect brackets")));
+    }
+
+    @Test
+    public void getCalculateReturnErrorForEmptySquareBrackets() throws Exception
+    {
+        mvc.perform(MockMvcRequestBuilders.get("/calculate")
+                .param("exp", "1+[]/3")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", equalTo("Incorrect brackets")));
+    }
+
+    @Test
+    public void getCalculateReturnErrorForEmptyCurlyBrackets() throws Exception
+    {
+        mvc.perform(MockMvcRequestBuilders.get("/calculate")
+                .param("exp", "1+{}/3")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", equalTo("Incorrect brackets")));
+    }
+
+    @Test
     public void getCalculateReturnErrorForUnexpectedToken() throws Exception
     {
         mvc.perform(MockMvcRequestBuilders.get("/calculate")
@@ -150,7 +180,7 @@ public class CalculatorControllerTest
                 .param("exp", "2-+7")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.message", equalTo("Cannot execute expression - check entered value and try again")));
+                .andExpect(jsonPath("$.message", equalTo("Cannot execute expression - check entered value")));
     }
 
     private void performTestFor(String inputExpression, double expectedResult) throws Exception

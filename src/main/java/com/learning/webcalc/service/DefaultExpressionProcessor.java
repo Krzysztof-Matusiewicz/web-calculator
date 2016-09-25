@@ -36,7 +36,7 @@ public class DefaultExpressionProcessor implements ExpressionProcessor
         decimalSeparator = symbols.getDecimalSeparator();
     }
 
-    public String validateBrackets(String expression)
+    public String validateBracketsParity(String expression)
     {
         Stack<Character> brackets = new Stack<>();
         for (char c : expression.toCharArray())
@@ -49,13 +49,13 @@ public class DefaultExpressionProcessor implements ExpressionProcessor
             {
                 if (brackets.isEmpty() || !bracketsMatch(brackets.pop(), c))
                 {
-                    throw CalculationException.forInvalidBrackets();
+                    throw CalculationException.forIncorrectBrackets();
                 }
             }
         }
         if (!brackets.isEmpty())
         {
-            throw CalculationException.forInvalidBrackets();
+            throw CalculationException.forIncorrectBrackets();
         }
         return expression;
     }
@@ -88,6 +88,15 @@ public class DefaultExpressionProcessor implements ExpressionProcessor
                 .replaceAll("\\.|,", Character.toString(decimalSeparator))
                 .replaceAll(SQRT_NAME, SQRT_SYMBOL)
                 .replaceAll(INTEGRAL_NAME, INTEGRAL_SYMBOL);
+    }
+
+    public String validateBracketsContent(String expression)
+    {
+        if (expression.contains("()"))
+        {
+            throw CalculationException.forIncorrectBrackets();
+        }
+        return expression;
     }
 
     public List<Object> tokenize(String expression)

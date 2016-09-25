@@ -23,12 +23,17 @@ public class CalculationException extends RuntimeException
         return new CalculationException("Invalid expression", cause);
     }
 
+    public static CalculationException forProcessingError()
+    {
+        return new CalculationException("Invalid expression");
+    }
+
     public static CalculationException forUnexpectedToken(Object token)
     {
         return new CalculationException(String.format("Unexpected token: '%s'", token));
     }
 
-    public static CalculationException forInvalidBrackets()
+    public static CalculationException forIncorrectBrackets()
     {
         return new CalculationException("Incorrect brackets");
     }
