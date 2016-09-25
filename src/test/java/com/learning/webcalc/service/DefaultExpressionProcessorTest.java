@@ -225,6 +225,20 @@ public class DefaultExpressionProcessorTest
     }
 
     @Test
+    public void shouldTokenizeExpressionWithNegativePowerExponent() throws ParseException
+    {
+        // given
+        final String testExpression = "8^-2";
+        final List<Object> tokens = asList(8d, "^", -2d);
+
+        // when
+        List<Object> result = objectUnderTest.tokenize(testExpression);
+
+        // then
+        assertThat(result).containsExactlyElementsOf(tokens);
+    }
+
+    @Test
     public void shouldTokenizeExpressionWithNonIntegerValues() throws ParseException
     {
         // given

@@ -17,10 +17,13 @@ import static com.learning.webcalc.service.util.ExpressionUtil.isArgumentSeparat
 import static com.learning.webcalc.service.util.ExpressionUtil.isOperator;
 import static java.lang.Character.isDigit;
 import static java.lang.Character.isLetter;
+import static java.util.Arrays.asList;
 
 @Component
 public class DefaultExpressionProcessor implements ExpressionProcessor
 {
+
+    private static final List<String> TOKENS_PRECEDING_NEGATIVE_VALUE = asList("(", "^", ARGUMENT_SEPARATOR);
 
     private final NumberFormat numberFormat;
 
@@ -147,7 +150,7 @@ public class DefaultExpressionProcessor implements ExpressionProcessor
             return true;
         }
         Object lastToken = tokens.get(tokens.size()-1);
-        return lastToken.equals("(") || lastToken.equals(ARGUMENT_SEPARATOR);
+        return TOKENS_PRECEDING_NEGATIVE_VALUE.contains(lastToken);
     }
 
     private boolean isParenthesis(char character)

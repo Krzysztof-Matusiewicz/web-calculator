@@ -64,7 +64,7 @@ public class CalculatorControllerTest
     @Test
     public void getCalculateComplexExpressionWithNegativeValues() throws Exception
     {
-        performTestFor("-5*(-18+(-3))", 105);
+        performTestFor("-5*(-2^-3+(-3))", 15.625);
     }
 
     @Test
@@ -114,6 +114,16 @@ public class CalculatorControllerTest
     }
 
     @Test
+    public void getCalculateReturnErrorForNegativeSqrt() throws Exception
+    {
+        mvc.perform(MockMvcRequestBuilders.get("/calculate")
+                .param("exp", "sqrt(3-9)")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", equalTo("Cannot calculate square root from negative value -6")));
+    }
+
+    @Test
     public void getCalculateReturnErrorForMissingBracket() throws Exception
     {
         mvc.perform(MockMvcRequestBuilders.get("/calculate")
@@ -140,7 +150,7 @@ public class CalculatorControllerTest
                 .param("exp", "2-+7")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.message", equalTo("Cannot execute expression. Check the expression value and try again.")));
+                .andExpect(jsonPath("$.message", equalTo("Cannot execute expression - check entered value and try again")));
     }
 
     private void performTestFor(String inputExpression, double expectedResult) throws Exception

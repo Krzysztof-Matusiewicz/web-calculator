@@ -1,5 +1,6 @@
 package com.learning.webcalc.service;
 
+import com.learning.webcalc.service.api.CalculationException;
 import com.learning.webcalc.service.api.RpnCalculator;
 import org.junit.Before;
 import org.junit.Test;
@@ -95,6 +96,26 @@ public class DefaultRpnCalculatorTest
 
         // then
         assertThat(result).isEqualTo(334);
+    }
+
+    @Test(expected = CalculationException.class)
+    public void shouldCalculateExplodeForDivisionByZero() throws Exception
+    {
+        // given
+        final List<Object> rpnTokens = asList(8d, 0d, "/");
+
+        // when
+        objectUnderTest.calculate(rpnTokens);
+    }
+
+    @Test(expected = CalculationException.class)
+    public void shouldCalculateExplodeForNegativeSqrt() throws Exception
+    {
+        // given
+        final List<Object> rpnTokens = asList(-10d, "s");
+
+        // when
+        objectUnderTest.calculate(rpnTokens);
     }
 
     @Test

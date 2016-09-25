@@ -43,7 +43,7 @@ public class CalculatorController
     @ExceptionHandler(Exception.class)
     public ErrorResponse handleException(Exception exc)
     {
-        return new ErrorResponse("Cannot execute expression. Check the expression value and try again.");
+        return new ErrorResponse("Cannot execute expression - check entered value and try again");
     }
 
 }

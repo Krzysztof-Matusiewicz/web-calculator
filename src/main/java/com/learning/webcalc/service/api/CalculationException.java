@@ -43,4 +43,9 @@ public class CalculationException extends RuntimeException
         return new CalculationException(String.format("Thread count should be greater than zero but was %s", threadCount));
     }
 
+    public static CalculationException forNegativeSqrt(double value)
+    {
+        return new CalculationException(String.format("Cannot calculate square root from negative value -6", value));
+    }
+
 }
