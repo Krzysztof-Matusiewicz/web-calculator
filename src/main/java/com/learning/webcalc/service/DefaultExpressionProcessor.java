@@ -10,7 +10,6 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 import static com.learning.webcalc.service.Operator.EXPONENTIATION;
 import static com.learning.webcalc.service.util.Constants.*;
@@ -23,7 +22,9 @@ import static java.util.Arrays.asList;
 public class DefaultExpressionProcessor implements ExpressionProcessor
 {
 
-    private static final List<Object> TOKENS_PRECEDING_NEGATIVE_VALUE = asList("(", EXPONENTIATION, ARGUMENT_SEPARATOR);
+    private static final List<Object> TOKENS_PRECEDING_NEGATIVE_VALUE = asList(Bracket.OPENING, EXPONENTIATION, ARGUMENT_SEPARATOR);
+
+    private static final String EMPTY_BRACKETS = String.valueOf(Bracket.OPENING.getSymbol()) + String.valueOf(Bracket.CLOSING.getSymbol());
 
     private final NumberFormat numberFormat;
 
@@ -38,53 +39,32 @@ public class DefaultExpressionProcessor implements ExpressionProcessor
 
     public String validateBracketsParity(String expression)
     {
-        Stack<Character> brackets = new Stack<>();
+        int openedBrackets = 0;
         for (char c : expression.toCharArray())
         {
-            if (c == '(' || c == '[' || c == '{')
+            if (c == Bracket.OPENING.getSymbol())
             {
-                brackets.push(c);
+                openedBrackets++;
             }
-            if (c == ')' || c == ']' || c == '}')
+            if (c == Bracket.CLOSING.getSymbol())
             {
-                if (brackets.isEmpty() || !bracketsMatch(brackets.pop(), c))
+                if (--openedBrackets < 0)
                 {
                     throw CalculationException.forIncorrectBrackets();
                 }
             }
         }
-        if (!brackets.isEmpty())
+        if (openedBrackets != 0)
         {
             throw CalculationException.forIncorrectBrackets();
         }
         return expression;
     }
 
-    private boolean bracketsMatch(char openingBracket, char closingBracket)
-    {
-        if (openingBracket == '(' && closingBracket == ')')
-        {
-            return true;
-        }
-        if (openingBracket == '[' && closingBracket == ']')
-        {
-            return true;
-        }
-        if (openingBracket == '{' && closingBracket == '}')
-        {
-            return true;
-        }
-        return false;
-    }
-
     public String clean(String expression)
     {
         return expression
                 .replaceAll("\\s", "")
-                .replaceAll("\\{", "(")
-                .replaceAll("\\}", ")")
-                .replaceAll("\\[", "(")
-                .replaceAll("\\]", ")")
                 .replaceAll("\\.|,", Character.toString(decimalSeparator))
                 .replaceAll(SQRT_NAME, SQRT_SYMBOL)
                 .replaceAll(INTEGRAL_NAME, INTEGRAL_SYMBOL);
@@ -92,7 +72,7 @@ public class DefaultExpressionProcessor implements ExpressionProcessor
 
     public String validateBracketsContent(String expression)
     {
-        if (expression.contains("()"))
+        if (expression.contains(EMPTY_BRACKETS))
         {
             throw CalculationException.forIncorrectBrackets();
         }
@@ -121,7 +101,7 @@ public class DefaultExpressionProcessor implements ExpressionProcessor
             {
                 number.append(c);
             }
-            else if (Operator.existsFor(c) || isParenthesis(c) || isFunction(c) || isArgumentSeparator(c))
+            else if (Operator.existsFor(c) || Bracket.existsFor(c) || isFunction(c) || isArgumentSeparator(c))
             {
                 if (number.length() > 0)
                 {
@@ -162,11 +142,6 @@ public class DefaultExpressionProcessor implements ExpressionProcessor
         return TOKENS_PRECEDING_NEGATIVE_VALUE.contains(lastToken);
     }
 
-    private boolean isParenthesis(char character)
-    {
-        return character == '(' || character == ')';
-    }
-
     private boolean isFunction(char character)
     {
         return isLetter(character);
@@ -182,6 +157,10 @@ public class DefaultExpressionProcessor implements ExpressionProcessor
         if (Operator.existsFor(c))
         {
             return Operator.valueOf(c);
+        }
+        if (Bracket.existsFor(c))
+        {
+            return Bracket.valueOf(c);
         }
         return Character.toString(c);
     }

@@ -38,7 +38,7 @@ public class DefaultExpressionProcessorTest
     public void shouldClean()
     {
         // given
-        final String testExpression = " 5 + [(7-{ 43 *3})/2 ] ";
+        final String testExpression = " 5 + ((7-( 43 *3))/2 ) ";
         final String cleanExpression = "5+((7-(43*3))/2)";
 
         // when
@@ -120,7 +120,7 @@ public class DefaultExpressionProcessorTest
     public void shouldValidateBracketsParity()
     {
         // given
-        String expression = "1+(8*10+[(98/3)^{2}-8])";
+        String expression = "1+(8*10+((98/3)^(2)-8))";
 
         // when
         String result = objectUnderTest.validateBracketsParity(expression);
@@ -150,16 +150,6 @@ public class DefaultExpressionProcessorTest
     }
 
     @Test(expected = CalculationException.class)
-    public void shouldValidateBracketsParityExplodeForClosingBracketNotMatchingOpening()
-    {
-        // given
-        String expression = "1+(8*[10)/3]";
-
-        // when
-        objectUnderTest.validateBracketsParity(expression);
-    }
-
-    @Test(expected = CalculationException.class)
     public void shouldValidateBracketsContentExplodeForEmptyBrackets()
     {
         // given
@@ -169,12 +159,22 @@ public class DefaultExpressionProcessorTest
         objectUnderTest.validateBracketsContent(expression);
     }
 
+    @Test(expected = CalculationException.class)
+    public void shouldValidateBracketsContentExplodeForClosingBracketBeforeOpening()
+    {
+        // given
+        String expression = "1+)8*10(/3";
+
+        // when
+        objectUnderTest.validateBracketsParity(expression);
+    }
+
     @Test
     public void shouldTokenize() throws ParseException
     {
         // given
         final String testExpression = "1+(8*10+(98/3^(2)-8))";
-        final List<Object> tokens = asList(1d, ADDITION, "(", 8d, MULTIPLICATION, 10d, ADDITION, "(", 98d, DIVISION, 3d, EXPONENTIATION, "(", 2d, ")", SUBTRACTION, 8d, ")", ")");
+        final List<Object> tokens = asList(1d, ADDITION, Bracket.OPENING, 8d, MULTIPLICATION, 10d, ADDITION, Bracket.OPENING, 98d, DIVISION, 3d, EXPONENTIATION, Bracket.OPENING, 2d, Bracket.CLOSING, SUBTRACTION, 8d, Bracket.CLOSING, Bracket.CLOSING);
 
         // when
         List<Object> result = objectUnderTest.tokenize(testExpression);
@@ -188,7 +188,7 @@ public class DefaultExpressionProcessorTest
     {
         // given
         final String testExpression = "1+s(8*10+1)/3";
-        final List<Object> tokens = asList(1d, ADDITION, "s", "(", 8d, MULTIPLICATION, 10d, ADDITION, 1d, ")", DIVISION, 3d);
+        final List<Object> tokens = asList(1d, ADDITION, "s", Bracket.OPENING, 8d, MULTIPLICATION, 10d, ADDITION, 1d, Bracket.CLOSING, DIVISION, 3d);
 
         // when
         List<Object> result = objectUnderTest.tokenize(testExpression);
@@ -202,7 +202,7 @@ public class DefaultExpressionProcessorTest
     {
         // given
         final String testExpression = "1+i(8*10;4-5;13)/3";
-        final List<Object> tokens = asList(1d, ADDITION, "i", "(", 8d, MULTIPLICATION, 10d, ";", 4d, SUBTRACTION, 5d, ";", 13d, ")", DIVISION, 3d);
+        final List<Object> tokens = asList(1d, ADDITION, "i", Bracket.OPENING, 8d, MULTIPLICATION, 10d, ";", 4d, SUBTRACTION, 5d, ";", 13d, Bracket.CLOSING, DIVISION, 3d);
 
         // when
         List<Object> result = objectUnderTest.tokenize(testExpression);
@@ -216,7 +216,7 @@ public class DefaultExpressionProcessorTest
     {
         // given
         final String testExpression = "-5*(-18+(-3))";
-        final List<Object> tokens = asList(-5d, MULTIPLICATION, "(", -18d, ADDITION, "(", -3d, ")", ")");
+        final List<Object> tokens = asList(-5d, MULTIPLICATION, Bracket.OPENING, -18d, ADDITION, Bracket.OPENING, -3d, Bracket.CLOSING, Bracket.CLOSING);
 
         // when
         List<Object> result = objectUnderTest.tokenize(testExpression);
@@ -230,7 +230,7 @@ public class DefaultExpressionProcessorTest
     {
         // given
         final String testExpression = "i(-4;-5;-6)";
-        final List<Object> tokens = asList("i", "(", -4d, ";", -5d, ";", -6d, ")");
+        final List<Object> tokens = asList("i", Bracket.OPENING, -4d, ";", -5d, ";", -6d, Bracket.CLOSING);
 
         // when
         List<Object> result = objectUnderTest.tokenize(testExpression);
@@ -258,7 +258,7 @@ public class DefaultExpressionProcessorTest
     {
         // given
         final String testExpression = String.format("(%.2f+%.3f)*%.1f-%.2f", 2.45, 567.789, 0.4, .99);
-        final List<Object> tokens = asList("(", 2.45d, ADDITION , 567.789, ")", MULTIPLICATION, 0.4, SUBTRACTION, 0.99);
+        final List<Object> tokens = asList(Bracket.OPENING, 2.45d, ADDITION , 567.789, Bracket.CLOSING, MULTIPLICATION, 0.4, SUBTRACTION, 0.99);
 
         // when
         List<Object> result = objectUnderTest.tokenize(testExpression);

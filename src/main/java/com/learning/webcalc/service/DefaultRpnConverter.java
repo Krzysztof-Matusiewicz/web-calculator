@@ -31,7 +31,7 @@ public class DefaultRpnConverter implements com.learning.webcalc.service.api.Rpn
             }
             else if (isArgumentSeparator(token))
             {
-                while (!stack.peek().equals("("))
+                while (stack.peek() != Bracket.OPENING)
                 {
                     output.add(stack.pop());
                 }
@@ -48,11 +48,11 @@ public class DefaultRpnConverter implements com.learning.webcalc.service.api.Rpn
                 }
                 stack.push(operator);
             }
-            else if (token.equals("("))
+            else if (token == Bracket.OPENING)
             {
                 stack.push(token);
             }
-            else if (token.equals(")"))
+            else if (token == Bracket.CLOSING)
             {
                 emptyStackUntilOpenParenthesis(stack, output);
                 if (!stack.isEmpty() && isFunction(stack.peek()))
@@ -79,7 +79,7 @@ public class DefaultRpnConverter implements com.learning.webcalc.service.api.Rpn
                 output.add(token);
                 continue;
             }
-            if (token.equals("("))
+            if (token == Bracket.OPENING)
             {
                 return;
             }

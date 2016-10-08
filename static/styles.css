@@ -5,36 +5,22 @@ body {
 
 td {
     background: #cccccc;
-    min-width: 60px;
+    min-width: 80px;
     height: 40px;
     text-align: center;
     cursor: pointer;
-}
-
-td.parenthesis {
-    background: #dddddd;
 }
 
 td.operation {
     background: #e6e6e6;
 }
 
-td.blank {
-    background: #dddddd;
-    cursor: default;
-}
-
 td:hover {
     background: #88aaff;
 }
 
-td.blank:hover {
-    background: #dddddd;
-}
-
 #container {
-    /*display: inline-block;*/
-    width: 385px;
+    width: 422px;
     margin-left: auto;
     margin-right: auto;
 }
