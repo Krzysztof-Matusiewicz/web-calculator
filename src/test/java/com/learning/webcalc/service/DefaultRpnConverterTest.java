@@ -4,6 +4,11 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static com.learning.webcalc.service.Operator.ADDITION;
+import static com.learning.webcalc.service.Operator.DIVISION;
+import static com.learning.webcalc.service.Operator.EXPONENTIATION;
+import static com.learning.webcalc.service.Operator.MULTIPLICATION;
+import static com.learning.webcalc.service.Operator.SUBTRACTION;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,8 +27,8 @@ public class DefaultRpnConverterTest
     public void shouldConvertSimpleExpression()
     {
         // given
-        final List<Object> testTokens = asList(3, "+", 4, "*", 2);
-        final List<Object> rpnTokens = asList(3, 4, 2, "*", "+");
+        final List<Object> testTokens = asList(3, ADDITION, 4, MULTIPLICATION, 2);
+        final List<Object> rpnTokens = asList(3, 4, 2, MULTIPLICATION, ADDITION);
 
         // when
         List<Object> result = objectUnderTest.convert(testTokens);
@@ -36,8 +41,8 @@ public class DefaultRpnConverterTest
     public void shouldConvertComplexExpression()
     {
         // given
-        final List<Object> testTokens = asList("(", "(", 2, "+", 7, ")", "/", 3, "+", "(", 3, "-", 14, ")", "*", 4, ")", "/", 2);
-        final List<Object> rpnTokens = asList(2, 7, "+", 3,  "/", 3, 14, "-", 4, "*", "+", 2, "/");
+        final List<Object> testTokens = asList("(", "(", 2, ADDITION, 7, ")", DIVISION, 3, ADDITION, "(", 3, SUBTRACTION, 14, ")", MULTIPLICATION, 4, ")", DIVISION, 2);
+        final List<Object> rpnTokens = asList(2, 7, ADDITION, 3,  DIVISION, 3, 14, SUBTRACTION, 4, MULTIPLICATION, ADDITION, 2, DIVISION);
 
         // when
         List<Object> result = objectUnderTest.convert(testTokens);
@@ -50,8 +55,8 @@ public class DefaultRpnConverterTest
     public void shouldConvertExpressionWithExponentiation()
     {
         // given
-        final List<Object> testTokens = asList(4, "^", 3, "^", 2);
-        final List<Object> rpnTokens = asList(4, 3, 2, "^", "^");
+        final List<Object> testTokens = asList(4, EXPONENTIATION, 3, EXPONENTIATION, 2);
+        final List<Object> rpnTokens = asList(4, 3, 2, EXPONENTIATION, EXPONENTIATION);
 
         // when
         List<Object> result = objectUnderTest.convert(testTokens);
@@ -64,8 +69,8 @@ public class DefaultRpnConverterTest
     public void shouldConvertExpressionWithExponentiationAndBrackets()
     {
         // given
-        final List<Object> testTokens = asList(5, "^", "(", 4, "-", 1, ")", "^", 2);
-        final List<Object> rpnTokens = asList(5, 4, 1, "-", 2, "^", "^");
+        final List<Object> testTokens = asList(5, EXPONENTIATION, "(", 4, SUBTRACTION, 1, ")", EXPONENTIATION, 2);
+        final List<Object> rpnTokens = asList(5, 4, 1, SUBTRACTION, 2, EXPONENTIATION, EXPONENTIATION);
 
         // when
         List<Object> result = objectUnderTest.convert(testTokens);
@@ -78,8 +83,8 @@ public class DefaultRpnConverterTest
     public void shouldConvertComplexExpressionWithExponentiation()
     {
         // given
-        final List<Object> testTokens = asList(3, "+", 4, "*", 2, "/", "(", 1, "-", 5, ")", "^", 2);
-        final List<Object> rpnTokens = asList(3, 4, 2, "*", 1, 5, "-", 2, "^", "/", "+");
+        final List<Object> testTokens = asList(3, ADDITION, 4, MULTIPLICATION, 2, DIVISION, "(", 1, SUBTRACTION, 5, ")", EXPONENTIATION, 2);
+        final List<Object> rpnTokens = asList(3, 4, 2, MULTIPLICATION, 1, 5, SUBTRACTION, 2, EXPONENTIATION, DIVISION, ADDITION);
 
         // when
         List<Object> result = objectUnderTest.convert(testTokens);
@@ -92,8 +97,8 @@ public class DefaultRpnConverterTest
     public void shouldConvertExpressionWithSqrt()
     {
         // given
-        final List<Object> testTokens = asList(1, "+", "s", "(", 8, "*", 10, "+", 1, ")", "/", 3);
-        final List<Object> rpnTokens = asList(1, 8, 10, "*", 1, "+", "s", 3, "/", "+");
+        final List<Object> testTokens = asList(1, ADDITION, "s", "(", 8, MULTIPLICATION, 10, ADDITION, 1, ")", DIVISION, 3);
+        final List<Object> rpnTokens = asList(1, 8, 10, MULTIPLICATION, 1, ADDITION, "s", 3, DIVISION, ADDITION);
 
         // when
         List<Object> result = objectUnderTest.convert(testTokens);
@@ -106,8 +111,8 @@ public class DefaultRpnConverterTest
     public void shouldConvertExpressionWithIntegral()
     {
         // given
-        final List<Object> testTokens = asList(1, "+", "i", "(", 8, "*", 10, ";", 4, "-", 5, ";", 13, ")", "/", 3);
-        final List<Object> rpnTokens = asList(1, 8, 10, "*", 4, 5, "-", 13, "i", 3, "/", "+");
+        final List<Object> testTokens = asList(1, ADDITION, "i", "(", 8, MULTIPLICATION, 10, ";", 4, SUBTRACTION, 5, ";", 13, ")", DIVISION, 3);
+        final List<Object> rpnTokens = asList(1, 8, 10, MULTIPLICATION, 4, 5, SUBTRACTION, 13, "i", 3, DIVISION, ADDITION);
 
         // when
         List<Object> result = objectUnderTest.convert(testTokens);

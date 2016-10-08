@@ -9,6 +9,11 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.List;
 
+import static com.learning.webcalc.service.Operator.ADDITION;
+import static com.learning.webcalc.service.Operator.DIVISION;
+import static com.learning.webcalc.service.Operator.EXPONENTIATION;
+import static com.learning.webcalc.service.Operator.MULTIPLICATION;
+import static com.learning.webcalc.service.Operator.SUBTRACTION;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -169,7 +174,7 @@ public class DefaultExpressionProcessorTest
     {
         // given
         final String testExpression = "1+(8*10+(98/3^(2)-8))";
-        final List<Object> tokens = asList(1d, "+", "(", 8d, "*", 10d, "+", "(", 98d, "/", 3d, "^", "(", 2d, ")", "-", 8d, ")", ")");
+        final List<Object> tokens = asList(1d, ADDITION, "(", 8d, MULTIPLICATION, 10d, ADDITION, "(", 98d, DIVISION, 3d, EXPONENTIATION, "(", 2d, ")", SUBTRACTION, 8d, ")", ")");
 
         // when
         List<Object> result = objectUnderTest.tokenize(testExpression);
@@ -183,7 +188,7 @@ public class DefaultExpressionProcessorTest
     {
         // given
         final String testExpression = "1+s(8*10+1)/3";
-        final List<Object> tokens = asList(1d, "+", "s", "(", 8d, "*", 10d, "+", 1d, ")", "/", 3d);
+        final List<Object> tokens = asList(1d, ADDITION, "s", "(", 8d, MULTIPLICATION, 10d, ADDITION, 1d, ")", DIVISION, 3d);
 
         // when
         List<Object> result = objectUnderTest.tokenize(testExpression);
@@ -197,7 +202,7 @@ public class DefaultExpressionProcessorTest
     {
         // given
         final String testExpression = "1+i(8*10;4-5;13)/3";
-        final List<Object> tokens = asList(1d, "+", "i", "(", 8d, "*", 10d, ";", 4d, "-", 5d, ";", 13d, ")", "/", 3d);
+        final List<Object> tokens = asList(1d, ADDITION, "i", "(", 8d, MULTIPLICATION, 10d, ";", 4d, SUBTRACTION, 5d, ";", 13d, ")", DIVISION, 3d);
 
         // when
         List<Object> result = objectUnderTest.tokenize(testExpression);
@@ -211,7 +216,7 @@ public class DefaultExpressionProcessorTest
     {
         // given
         final String testExpression = "-5*(-18+(-3))";
-        final List<Object> tokens = asList(-5d, "*", "(", -18d, "+", "(", -3d, ")", ")");
+        final List<Object> tokens = asList(-5d, MULTIPLICATION, "(", -18d, ADDITION, "(", -3d, ")", ")");
 
         // when
         List<Object> result = objectUnderTest.tokenize(testExpression);
@@ -239,7 +244,7 @@ public class DefaultExpressionProcessorTest
     {
         // given
         final String testExpression = "8^-2";
-        final List<Object> tokens = asList(8d, "^", -2d);
+        final List<Object> tokens = asList(8d, EXPONENTIATION, -2d);
 
         // when
         List<Object> result = objectUnderTest.tokenize(testExpression);
@@ -253,7 +258,7 @@ public class DefaultExpressionProcessorTest
     {
         // given
         final String testExpression = String.format("(%.2f+%.3f)*%.1f-%.2f", 2.45, 567.789, 0.4, .99);
-        final List<Object> tokens = asList("(", 2.45d, "+", 567.789, ")", "*", 0.4, "-", 0.99);
+        final List<Object> tokens = asList("(", 2.45d, ADDITION , 567.789, ")", MULTIPLICATION, 0.4, SUBTRACTION, 0.99);
 
         // when
         List<Object> result = objectUnderTest.tokenize(testExpression);

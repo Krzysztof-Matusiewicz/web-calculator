@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import static com.learning.webcalc.service.Operator.EXPONENTIATION;
 import static com.learning.webcalc.service.util.Constants.*;
 import static com.learning.webcalc.service.util.ExpressionUtil.isArgumentSeparator;
-import static com.learning.webcalc.service.util.ExpressionUtil.isOperator;
 import static java.lang.Character.isDigit;
 import static java.lang.Character.isLetter;
 import static java.util.Arrays.asList;
@@ -23,7 +23,7 @@ import static java.util.Arrays.asList;
 public class DefaultExpressionProcessor implements ExpressionProcessor
 {
 
-    private static final List<String> TOKENS_PRECEDING_NEGATIVE_VALUE = asList("(", "^", ARGUMENT_SEPARATOR);
+    private static final List<Object> TOKENS_PRECEDING_NEGATIVE_VALUE = asList("(", EXPONENTIATION, ARGUMENT_SEPARATOR);
 
     private final NumberFormat numberFormat;
 
@@ -121,14 +121,14 @@ public class DefaultExpressionProcessor implements ExpressionProcessor
             {
                 number.append(c);
             }
-            else if (isOperator(c) || isParenthesis(c) || isFunction(c) || isArgumentSeparator(c))
+            else if (Operator.existsFor(c) || isParenthesis(c) || isFunction(c) || isArgumentSeparator(c))
             {
                 if (number.length() > 0)
                 {
                     tokens.add(toDouble(number.toString()));
                     number = new StringBuilder();
                 }
-                tokens.add(Character.toString(c));
+                tokens.add(createToken(c));
             }
             else
             {
@@ -175,6 +175,15 @@ public class DefaultExpressionProcessor implements ExpressionProcessor
     private double toDouble(String value) throws ParseException
     {
         return numberFormat.parse(value).doubleValue();
+    }
+
+    private Object createToken(char c)
+    {
+        if (Operator.existsFor(c))
+        {
+            return Operator.valueOf(c);
+        }
+        return Character.toString(c);
     }
 
 }

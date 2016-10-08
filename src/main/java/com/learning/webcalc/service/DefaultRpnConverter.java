@@ -36,16 +36,17 @@ public class DefaultRpnConverter implements com.learning.webcalc.service.api.Rpn
                     output.add(stack.pop());
                 }
             }
-            else if (isOperator(token))
+            else if (token instanceof Operator)
             {
-                while (!stack.isEmpty() && (
-                        leftAssociativeWithLessOrEqualPriority(token, stack.peek()) ||
-                        rightAssociativeWithLessPriority(token, stack.peek())
+                final Operator operator = (Operator)token;
+                while (!stack.isEmpty() && stack.peek() instanceof Operator && (
+                        leftAssociativeWithLessOrEqualPriority(operator, (Operator)stack.peek()) ||
+                        rightAssociativeWithLessPriority(operator, (Operator)stack.peek())
                     ))
                 {
                     output.add(stack.pop());
                 }
-                stack.push(token);
+                stack.push(operator);
             }
             else if (token.equals("("))
             {
@@ -73,7 +74,7 @@ public class DefaultRpnConverter implements com.learning.webcalc.service.api.Rpn
         while (!stack.isEmpty())
         {
             Object token = stack.pop();
-            if (isOperator(token))
+            if (token instanceof Operator)
             {
                 output.add(token);
                 continue;
@@ -92,7 +93,7 @@ public class DefaultRpnConverter implements com.learning.webcalc.service.api.Rpn
         while (!stack.isEmpty())
         {
             Object token = stack.pop();
-            if (isOperator(token))
+            if (token instanceof Operator)
             {
                 output.add(token);
                 continue;
@@ -101,14 +102,14 @@ public class DefaultRpnConverter implements com.learning.webcalc.service.api.Rpn
         }
     }
 
-    private boolean leftAssociativeWithLessOrEqualPriority(Object operatorFromTokens, Object operatorOnStack)
+    private boolean leftAssociativeWithLessOrEqualPriority(Operator operatorFromTokens, Operator operatorOnStack)
     {
-        return isLeftAssociativeOperator(operatorOnStack) && getImportance(operatorFromTokens) <= getImportance(operatorOnStack);
+        return operatorOnStack.getAssociativity() == MathOperator.Associativity.LEFT && operatorFromTokens.getImportance() <= operatorOnStack.getImportance();
     }
 
-    private boolean rightAssociativeWithLessPriority(Object operatorFromTokens, Object operatorOnStack)
+    private boolean rightAssociativeWithLessPriority(Operator operatorFromTokens, Operator operatorOnStack)
     {
-        return isRightAssociativeOperator(operatorOnStack) && getImportance(operatorFromTokens) < getImportance(operatorOnStack);
+        return operatorOnStack.getAssociativity() == MathOperator.Associativity.RIGHT && operatorFromTokens.getImportance() < operatorOnStack.getImportance();
     }
 
 }

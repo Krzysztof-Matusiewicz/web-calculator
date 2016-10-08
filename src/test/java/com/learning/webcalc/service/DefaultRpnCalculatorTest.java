@@ -11,6 +11,11 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.List;
 
+import static com.learning.webcalc.service.Operator.ADDITION;
+import static com.learning.webcalc.service.Operator.DIVISION;
+import static com.learning.webcalc.service.Operator.EXPONENTIATION;
+import static com.learning.webcalc.service.Operator.MULTIPLICATION;
+import static com.learning.webcalc.service.Operator.SUBTRACTION;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +41,7 @@ public class DefaultRpnCalculatorTest
     public void shouldCalculateSimpleExpression() throws Exception
     {
         // given
-        final List<Object> rpnTokens = asList(3d, 4d, 2d, "*", "+");
+        final List<Object> rpnTokens = asList(3d, 4d, 2d, MULTIPLICATION, ADDITION);
 
         // when
         double result = objectUnderTest.calculate(rpnTokens);
@@ -49,7 +54,7 @@ public class DefaultRpnCalculatorTest
     public void shouldCalculateComplexExpression() throws Exception
     {
         // given
-        final List<Object> rpnTokens = asList(2d, 7d, "+", 3d, "/", 3d, 14d, "-", 4d, "*", "+", 2d, "/");
+        final List<Object> rpnTokens = asList(2d, 7d, ADDITION, 3d, DIVISION, 3d, 14d, SUBTRACTION, 4d, MULTIPLICATION, ADDITION, 2d, DIVISION);
 
         // when
         double result = objectUnderTest.calculate(rpnTokens);
@@ -62,7 +67,7 @@ public class DefaultRpnCalculatorTest
     public void shouldCalculateExpressionWithExponentiation() throws Exception
     {
         // given
-        final List<Object> rpnTokens = asList(5d, 4d, 1d, "-", 2d, "^", "^");
+        final List<Object> rpnTokens = asList(5d, 4d, 1d, SUBTRACTION, 2d, EXPONENTIATION, EXPONENTIATION);
 
         // when
         double result = objectUnderTest.calculate(rpnTokens);
@@ -75,7 +80,7 @@ public class DefaultRpnCalculatorTest
     public void shouldCalculateExpressionWithSqrt() throws Exception
     {
         // given
-        final List<Object> rpnTokens = asList(1d, 8d, 10d, "*", 1d, "+", "s", 3d, "/", "+");
+        final List<Object> rpnTokens = asList(1d, 8d, 10d, MULTIPLICATION, 1d, ADDITION, "s", 3d, DIVISION, ADDITION);
 
         // when
         double result = objectUnderTest.calculate(rpnTokens);
@@ -88,7 +93,7 @@ public class DefaultRpnCalculatorTest
     public void shouldCalculateExpressionWithIntegral() throws Exception
     {
         // given
-        final List<Object> rpnTokens = asList(1d, 8d, 10d, "*", 4d, 5d, "-", 9d, 2d, "i", 3d, "/", "+");
+        final List<Object> rpnTokens = asList(1d, 8d, 10d, MULTIPLICATION, 4d, 5d, SUBTRACTION, 9d, 2d, "i", 3d, DIVISION, ADDITION);
         Mockito.stub(defaultIntegralCalculatorMock.calculate(80d, -1d, 9, 2)).toReturn(999d);
 
         // when
@@ -102,7 +107,7 @@ public class DefaultRpnCalculatorTest
     public void shouldCalculateExplodeForDivisionByZero() throws Exception
     {
         // given
-        final List<Object> rpnTokens = asList(8d, 0d, "/");
+        final List<Object> rpnTokens = asList(8d, 0d, DIVISION);
 
         // when
         objectUnderTest.calculate(rpnTokens);
